@@ -316,7 +316,7 @@ relative, it is assumed to be somewhere in `PATH'."
   (car (select 'file-readable-p 
 	       (select 'identity
 		       (mapcar 'ruby-test-expand-executable-path
-			       ruby-executables)))))
+			       ruby-test-ruby-executables)))))
 
 (defun ruby-test-ruby-root (filename)
   "Returns the Ruby project directory for the given FILENAME,
