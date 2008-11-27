@@ -370,7 +370,7 @@ for the current buffer or the optional FILENAME."
   "Returns the unit filename for the current buffer's filename or
 the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
-    (ruby-test-find-target-filename filename ruby-test-specification-filename-mapping)))
+    (ruby-test-find-target-filename filename ruby-test-unit-filename-mapping)))
 
 (add-hook 'find-file-hooks 'ruby-test-find-file-hook)
 (provide 'ruby-test)
