@@ -171,10 +171,6 @@ test; or the last run test (if there was one)."
   (let ((files))
     (if (buffer-file-name)
 	(setq files (cons (buffer-file-name) files)))
-;;;     (let ((filename (or (ruby-test-unit-filename (buffer-file-name)) (ruby-test-specification-filename (buffer-file-name)))))
-;;;       (message "C: %s" filename)
-;;;       (if filename
-;;;           (setq files (cons filename files))))
     (setq files (append
 		 (mapcar
 		  (lambda (win-name) (buffer-file-name (window-buffer win-name)))
@@ -236,12 +232,25 @@ filename is a Ruby implementation file."
           (compilation-start (ruby-test-command filename)))
       (message ruby-test-not-found-message))))
 
-;(ruby-test-ruby-root "~/workspace/burningswell/spec/controllers/comments_controller_spec.rb")
+(defun ruby-test-run-at-point ()
+  "Run test at point individually, using the same search strategy
+as `ruby-test-run-file'"
+  (interactive)
+  (let ((filename (ruby-test-find-file)))
+    (let ((test-file-buffer (get-file-buffer filename)))
+      (if (and filename
+	       test-file-buffer)
+	  (save-excursion
+	    (set-buffer test-file-buffer)
+	    (let ((line (line-number-at-pos (point))))
+              (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
+              (compilation-start (ruby-test-command filename line))))
+	(message ruby-test-not-found-message)))))
 
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification
 depending on the filename."
-  (let (command)
+  (let (command options)
     (cond
      ((ruby-test-spec-p filename) 
       (setq command (or (ruby-test-rspec-executable filename) spec))
@@ -257,7 +266,7 @@ depending on the filename."
 		(setq options (cons filename (list (format "--name=%s" test-case))))
 	      (error "No test case at %s:%s" filename line-number)))))
      (t (message "File is not a known ruby test file")))
-    (format "%s %s" command filename)))
+    (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
 
 (defun ruby-test-project-root (filename root-predicate)
   "Returns the project root directory for a FILENAME using the
