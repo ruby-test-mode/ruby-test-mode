@@ -86,7 +86,9 @@ minor mode."
   :group 'ruby-test)
 
 (defcustom ruby-test-implementation-filename-mapping
-  '(("\\(.*\\)\\(spec/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
+  '(
+    ("\\(.*\\)\\(spec/controllers/\\)\\(.*\\)\\([^/]*\\)\\(_routing_spec\\)\\(\\.rb\\)$" "\\1config/routes.rb")
+    ("\\(.*\\)\\(spec/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
     ("\\(.*\\)\\(spec/\\)\\(views\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5")
     ("\\(.*\\)\\(spec/\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3\\4\\5\\7")
     ("\\(.*\\)\\(test/\\)\\(unit/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/models/\\4\\5\\7")
