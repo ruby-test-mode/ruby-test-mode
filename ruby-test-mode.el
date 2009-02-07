@@ -383,4 +383,4 @@ the optional FILENAME, else nil."
     (ruby-test-find-target-filename filename ruby-test-unit-filename-mapping)))
 
 (add-hook 'find-file-hooks 'ruby-test-find-file-hook)
-(provide 'ruby-test)
+(provide 'ruby-test-mode)
