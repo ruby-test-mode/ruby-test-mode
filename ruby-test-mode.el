@@ -1,11 +1,12 @@
-;;; ruby-test.el --- Test runner for ruby unit tests.
+;;; ruby-test.el --- An Emacs minor mode for Behavioural and Test
+;;; Driven Development in Ruby.
 
-;; Caspar Florian Ebeling <florian.ebeling@gmail.com>, 2007-12-06
+;; Authors:
+;;
+;; Caspar Florian Ebeling <florian.ebeling@gmail.com>
+;; Roman Scherer <roman.scherer@gmx.de>
+;;
 ;; This software can be redistributed. GPL v2 applies.
-
-;; todo
-
-;;; Commentary:
 
 ;; This mode provides commands for running ruby tests. The output is
 ;; shown in separate buffer '*Ruby-Test*' in ruby-test
@@ -25,7 +26,18 @@
 ;; Using the command `ruby-test-run-test-at-point', you can run test
 ;; cases separately from others in the same file.
 
-;;; History:
+;; Keybindings:
+;;
+;; C-cr - Runs the current buffer's file as an unit test or an rspec
+;;        example.
+;;
+;; C-cp - Runs the unit test or rspec example at the current buffer's
+;;        point.
+;;
+;; C-ct - Toggle between implementation and test/example files.
+
+;; History:
+;;
 ;; - 09.02.08, Clickable backtrace added.
 ;; - 02.03.08, Rails support, by Roman Scherer
 ;; - 06.06.08, Bugfixes
@@ -40,12 +52,6 @@
 ;; - 21.08.08, Refactoring & Bug fix: Before running test files, emacs
 ;;             changes into the project's root directory, so relative
 ;;             paths are handled correctly. (Roman Scherer)
-
-;;; Code:
-
-;; These key bindings are global, since they should be visible in
-;; other windows operating on the file named by variable
-;; `ruby-test-last-run'.
 
 (defgroup ruby-test nil
   "Minor mode providing commands and helpers for Behavioural and
@@ -141,7 +147,7 @@ non-nil."
   (let ((result nil))
     (dolist (item ls)
       (if (funcall fn item)
-	  (setq result (cons item result))))
+          (setq result (cons item result))))
     (reverse result)))
 
 (defalias 'find-all 'select)
@@ -174,13 +180,13 @@ current buffer (if that's a test; another open buffer which is a
 test; or the last run test (if there was one)."
   (let ((files))
     (if (buffer-file-name)
-	(setq files (cons (buffer-file-name) files)))
+        (setq files (cons (buffer-file-name) files)))
     (setq files (append
-		 (mapcar
-		  (lambda (win-name) (buffer-file-name (window-buffer win-name)))
-		  (window-list))))
+                 (mapcar
+                  (lambda (win-name) (buffer-file-name (window-buffer win-name)))
+                  (window-list))))
     (if (boundp 'ruby-test-last-run)
-	(nconc files (list ruby-test-last-run)))
+        (nconc files (list ruby-test-last-run)))
     (setq ruby-test-last-run (car (select 'ruby-test-any-p (select 'identity files))))))
 
 (defun ruby-test-find-file-hook ()
@@ -207,7 +213,7 @@ second element."
     (goto-line line)
     (message "%s:%s" (current-buffer) (point))
     (if (re-search-backward ruby-test-search-testcase-re nil t)
-	(match-string 1))))
+        (match-string 1))))
 
 (defun ruby-test-implementation-filename (&optional filename)
   "Returns the implementation filename for the current buffer's
@@ -243,32 +249,32 @@ as `ruby-test-run-file'"
   (let ((filename (ruby-test-find-file)))
     (let ((test-file-buffer (get-file-buffer filename)))
       (if (and filename
-	       test-file-buffer)
-	  (save-excursion
-	    (set-buffer test-file-buffer)
-	    (let ((line (line-number-at-pos (point))))
+               test-file-buffer)
+          (save-excursion
+            (set-buffer test-file-buffer)
+            (let ((line (line-number-at-pos (point))))
               (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
               (compilation-start (ruby-test-command filename line))))
-	(message ruby-test-not-found-message)))))
+        (message ruby-test-not-found-message)))))
 
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification
 depending on the filename."
   (let (command options)
     (cond
-     ((ruby-test-spec-p filename) 
+     ((ruby-test-spec-p filename)
       (setq command (or (ruby-test-rspec-executable filename) spec))
       (setq category "spec")
       (if line-number
-	  (setq options (cons "--line" (cons (format "%d" line-number) options)))))
+          (setq options (cons "--line" (cons (format "%d" line-number) options)))))
      ((ruby-test-p filename)
       (setq command (or (ruby-test-ruby-executable) "ruby"))
       (setq category "unit test")
       (if line-number
-	  (let ((test-case (ruby-test-find-testcase-at filename line-number)))
-	    (if test-case
-		(setq options (cons filename (list (format "--name=%s" test-case))))
-	      (error "No test case at %s:%s" filename line-number)))))
+          (let ((test-case (ruby-test-find-testcase-at filename line-number)))
+            (if test-case
+                (setq options (cons filename (list (format "--name=%s" test-case))))
+              (error "No test case at %s:%s" filename line-number)))))
      (t (message "File is not a known ruby test file")))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
 
@@ -279,21 +285,21 @@ if any of the directories in FILENAME is tested to t by
 evaluating the ROOT-PREDICATE."
   (if (funcall root-predicate filename)
       filename
-    (and 
-     filename 
+    (and
+     filename
      (not (string= "/" filename))
-     (ruby-test-project-root 
-      (file-name-directory 
+     (ruby-test-project-root
+      (file-name-directory
        (directory-file-name (file-name-directory filename)))
       root-predicate))))
-        
+
 (defun ruby-test-project-root-p (directory candidates)
   "Returns t if one of the filenames in CANDIDATES is existing
 relative to the given DIRECTORY, else nil."
   (let ((found nil))
     (while (and (not found) (car candidates))
-      (setq found 
-            (file-exists-p 
+      (setq found
+            (file-exists-p
              (concat (file-name-as-directory directory) (car candidates))))
       (setq candidates (cdr candidates)))
     found))
@@ -320,20 +326,20 @@ relative, it is assumed to be somewhere in `PATH'."
   (if (not (buffer-file-name (get-buffer test-file)))
       (error "%s" "Cannot find spec relative to non-file buffer"))
   (let ((executables (copy-sequence ruby-test-rspec-executables)))
-    (if (ruby-test-rails-root test-file) 
-	(add-to-list 'executables (concat (ruby-test-rails-root test-file) 
-					  "script/spec")))
-    (setq executables (mapcar 'ruby-test-expand-executable-path 
-			      executables))
+    (if (ruby-test-rails-root test-file)
+        (add-to-list 'executables (concat (ruby-test-rails-root test-file)
+                                          "script/spec")))
+    (setq executables (mapcar 'ruby-test-expand-executable-path
+                              executables))
     (let ((spec (car (select 'file-readable-p executables))))
       spec)))
 
 (defun ruby-test-ruby-executable ()
   "Returns the ruby binary to be used."
-  (car (select 'file-readable-p 
-	       (select 'identity
-		       (mapcar 'ruby-test-expand-executable-path
-			       ruby-test-ruby-executables)))))
+  (car (select 'file-readable-p
+               (select 'identity
+                       (mapcar 'ruby-test-expand-executable-path
+                               ruby-test-ruby-executables)))))
 
 (defun ruby-test-ruby-root (filename)
   "Returns the Ruby project directory for the given FILENAME,
