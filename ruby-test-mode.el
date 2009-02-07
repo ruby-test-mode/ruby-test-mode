@@ -28,13 +28,13 @@
 
 ;; Keybindings:
 ;;
-;; C-cr - Runs the current buffer's file as an unit test or an rspec
-;;        example.
+;; C-c r - Runs the current buffer's file as an unit test or an rspec
+;;         example.
 ;;
-;; C-cp - Runs the unit test or rspec example at the current buffer's
-;;        point.
+;; C-c p - Runs the unit test or rspec example at the current buffer's
+;;         point.
 ;;
-;; C-ct - Toggle between implementation and test/example files.
+;; C-c t - Toggle between implementation and test/example files.
 
 ;; History:
 ;;
