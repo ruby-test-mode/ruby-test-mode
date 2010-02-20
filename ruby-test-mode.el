@@ -89,7 +89,7 @@ Test Driven Development in Ruby."
   :group 'ruby-test)
 
 (defcustom ruby-test-file-name-extensions
-  '("builder" "erb" "haml" "rb" "rjs)
+  '("builder" "erb" "haml" "rb" "rjs")
   "*A list of filename extensions that trigger the loading of the
 minor mode."
   :type '(list)
