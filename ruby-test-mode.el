@@ -135,6 +135,7 @@ second the replace expression."
   :type '(list)
   :group 'ruby-test)
 
+;;;###autoload
 (define-minor-mode ruby-test-mode
   "Toggle Ruby-Test minor mode.
 With no argument, this command toggles the mode. Non-null prefix
