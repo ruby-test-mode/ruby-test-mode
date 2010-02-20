@@ -1,11 +1,15 @@
-;;; ruby-test.el --- An Emacs minor mode for Behavioural and Test
-;;; Driven Development in Ruby.
+;;; ruby-test.el --- Minor mode for Behaviour and Test Driven
+;;; Development in Ruby.
 
-;; Authors:
-;;
-;; Caspar Florian Ebeling <florian.ebeling@gmail.com>
-;; Roman Scherer <roman.scherer@gmx.de>
-;;
+;; Copyright (C) 2009 Roman Scherer, Caspar Florian Ebeling
+
+;; Author: Roman Scherer <roman.scherer@gmx.de>
+;;         Caspar Florian Ebeling <florian.ebeling@gmail.com>
+;; Maintainer: Roman Scherer <roman.scherer@gmx.de>
+;; Created: 09.02.08
+;; Version: 1.0
+;; Keywords: ruby unit test rspec
+
 ;; This software can be redistributed. GPL v2 applies.
 
 ;; This mode provides commands for running ruby tests. The output is
