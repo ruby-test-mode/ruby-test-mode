@@ -1,4 +1,4 @@
-;;; ruby-test.el --- Minor mode for Behaviour and Test Driven
+;;; ruby-test-mode.el --- Minor mode for Behaviour and Test Driven
 ;;; Development in Ruby.
 
 ;; Copyright (C) 2009 Roman Scherer, Caspar Florian Ebeling
@@ -7,7 +7,7 @@
 ;;         Caspar Florian Ebeling <florian.ebeling@gmail.com>
 ;; Maintainer: Roman Scherer <roman.scherer@gmx.de>
 ;; Created: 09.02.08
-;; Version: 1.1
+;; Version: 1.0
 ;; Keywords: ruby unit test rspec
 
 ;; This software can be redistributed. GPL v2 applies.
@@ -389,3 +389,5 @@ the optional FILENAME, else nil."
 
 (add-hook 'find-file-hooks 'ruby-test-find-file-hook)
 (provide 'ruby-test-mode)
+
+;;; ruby-test-mode.el ends here
