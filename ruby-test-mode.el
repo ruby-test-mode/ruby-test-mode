@@ -244,7 +244,7 @@ filename is a Ruby implementation file."
     (if filename
         (progn
           (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
-          (compilation-start (ruby-test-command filename)))
+          (compilation-start (ruby-test-command filename) t))
       (message ruby-test-not-found-message))))
 
 (defun ruby-test-run-at-point ()
@@ -259,7 +259,7 @@ as `ruby-test-run-file'"
             (set-buffer test-file-buffer)
             (let ((line (line-number-at-pos (point))))
               (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
-              (compilation-start (ruby-test-command filename line))))
+              (compilation-start (ruby-test-command filename line) t)))
         (message ruby-test-not-found-message)))))
 
 (defun ruby-test-command (filename &optional line-number)
