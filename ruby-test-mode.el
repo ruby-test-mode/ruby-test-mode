@@ -354,7 +354,8 @@ else nil."
 (defun ruby-test-ruby-root-p (directory)
   "Returns t if the given DIRECTORY is the root of a Ruby
 project, else nil."
-  (ruby-test-project-root-p directory '("Rakefile")))
+  (or (ruby-test-project-root-p directory '("Rakefile"))
+      (ruby-test-project-root-p directory '("Rakefile.rb"))))
 
 (defun ruby-test-specification-filename (&optional filename)
   "Returns the specification filename for the current buffer's
