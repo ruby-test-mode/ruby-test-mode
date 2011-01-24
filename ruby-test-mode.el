@@ -270,6 +270,7 @@ depending on the filename."
      ((ruby-test-spec-p filename)
       (setq command (or (ruby-test-rspec-executable filename) spec))
       (setq category "spec")
+      (setq options (cons "-b" options))
       (if line-number
           (setq options (cons "--line" (cons (format "%d" line-number) options)))))
      ((ruby-test-p filename)
