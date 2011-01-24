@@ -32,11 +32,11 @@
 
 ;; Keybindings:
 ;;
-;; C-c r - Runs the current buffer's file as an unit test or an rspec
-;;         example.
+;; C-c C-c . - Runs the current buffer's file as an unit test or an
+;;             rspec example.
 ;;
-;; C-c p - Runs the unit test or rspec example at the current buffer's
-;;         point.
+;; C-c C-c . - Runs the unit test or rspec example at the current buffer's
+;;             buffer's point.
 ;;
 ;; C-c t - Toggle between implementation and test/example files.
 
@@ -64,9 +64,9 @@ Test Driven Development in Ruby."
 
 (defvar ruby-test-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\C-cr" 'ruby-test-run)
-    (define-key map "\C-cp" 'ruby-test-run-at-point)
-    (define-key map "\C-ct" 'ruby-test-toggle-implementation-and-specification)
+    (define-key map (kbd "C-c C-c .") 'ruby-test-run)
+    (define-key map (kbd "C-c C-c ,") 'ruby-test-run-at-point)
+    (define-key map (kbd "C-c t") 'ruby-test-toggle-implementation-and-specification)
     map)
   "The keymap used in `ruby-test-mode' buffers.")
 
