@@ -116,7 +116,7 @@ second the replace expression."
   '(
     ("\\(.*\\)\\(app/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3\\4_spec\\5\\6")
     ("\\(.*\\)\\(app/views\\)\\(.*\\)$" "\\1spec/views\\3\\4_spec\\5\\6.rb")
-    ("\\(.*\\)\\(lib\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\2\\3_spec\\4\\5")
+    ("\\(.*\\)\\(lib\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\2\\3_spec\\4\\5" "\\1spec\\3_spec\\4\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_spec\\2"))
   "Regular expressions to map Ruby specification to
 implementation filenames). The first element in each list is the
@@ -207,11 +207,19 @@ second element."
   (let ((target-filename nil))
     (while (and (not target-filename) mapping)
       (let ((regexp-match (car (car mapping)))
-            (regexp-replace (car (cdr (car mapping)))))
+            (regexp-replace-candidates (cdr (car mapping))))
         (if (string-match regexp-match filename)
-            (setq target-filename (replace-match regexp-replace nil nil filename nil)))
+	    (let ((target-filename-candidates
+		   (mapcar '(lambda (regexp)
+			      (replace-match regexp nil nil filename nil))
+			   regexp-replace-candidates)))
+	      (setq target-filename
+		    (or (dolist (filename target-filename-candidates exist-filename)
+			  (when (file-exists-p filename)
+			    (setq exist-filename filename)))
+			(car target-filename-candidates)))))
         (setq mapping (cdr mapping))))
-      target-filename))
+    target-filename))
 
 (defun ruby-test-find-testcase-at (file line)
   (save-excursion
