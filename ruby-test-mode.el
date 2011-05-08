@@ -209,14 +209,36 @@ second element."
       (let ((regexp-match (car (car mapping)))
             (regexp-replace-candidates (cdr (car mapping))))
         (if (string-match regexp-match filename)
-	    (let ((target-filename-candidates
-		   (mapcar '(lambda (regexp)
-			      (replace-match regexp nil nil filename nil))
-			   regexp-replace-candidates)))
-	      (setq target-filename
-		    (or (dolist (filename target-filename-candidates exist-filename)
-			  (when (file-exists-p filename)
-			    (setq exist-filename filename)))
+            (let ((target-filename-candidates
+                   (mapcar '(lambda (regexp)
+                              (replace-match regexp nil nil filename nil))
+                           regexp-replace-candidates)))
+              (setq target-filename
+                    (or (dolist (filename target-filename-candidates exist-filename)
+                          (setq exist-filename (if (file-exists-p filename)
+                                                   filename
+                                                 nil)))
+			(car target-filename-candidates)))))
+        (setq mapping (cdr mapping))))
+    target-filename))
+
+(defun ruby-test-find-target-filename (filename mapping)
+  "Find the target filename by matching FILENAME with the first
+element of each list in mapping, and replacing the match with the
+second element."
+  (let ((target-filename nil))
+    (while (and (not target-filename) mapping)
+      (let ((regexp-match (car (car mapping)))
+            (regexp-replace-candidates (cdr (car mapping))))
+        (if (string-match regexp-match filename)
+            (let ((target-filename-candidates
+                   (mapcar '(lambda (regexp)
+                              (replace-match regexp nil nil filename nil))
+                           regexp-replace-candidates)))
+              (setq target-filename
+                    (or (dolist (filename target-filename-candidates exist-filename)
+                          (when (file-exists-p filename)
+                            (setq exist-filename filename)))
 			(car target-filename-candidates)))))
         (setq mapping (cdr mapping))))
     target-filename))
