@@ -300,7 +300,7 @@ depending on the filename."
       (if line-number
           (let ((test-case (ruby-test-find-testcase-at filename line-number)))
             (if test-case
-                (setq options (cons filename (list (format "--name=%s" test-case))))
+                (setq options (cons filename (list (format "--name /%s/" test-case))))
               (error "No test case at %s:%s" filename line-number)))))
      (t (message "File is not a known ruby test file")))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
