@@ -230,9 +230,16 @@ second element."
   (save-excursion
     (set-buffer (get-file-buffer file))
     (goto-line line)
+    (end-of-line)
     (message "%s:%s" (current-buffer) (point))
-    (if (re-search-backward ruby-test-search-testcase-re nil t)
-        (match-string 1))))
+    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\)[ \t]+"
+                                    "\\([\"'].*?[\"']\\|" ruby-symbol-re "*\\)"
+                                    "[ \t]*") nil t)
+        (let ((name (match-string 2)))
+          (if (string-match "^[\"']\\(.*\\)[\"']$" name)
+              (replace-regexp-in-string " +" "_" (match-string 1 name))
+            (unless (string-equal "setup" name)
+              name))))))
 
 (defun ruby-test-implementation-filename (&optional filename)
   "Returns the implementation filename for the current buffer's
