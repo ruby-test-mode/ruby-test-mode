@@ -35,7 +35,7 @@
 ;; C-c C-c . - Runs the current buffer's file as an unit test or an
 ;;             rspec example.
 ;;
-;; C-c C-c . - Runs the unit test or rspec example at the current buffer's
+;; C-c C-c , - Runs the unit test or rspec example at the current buffer's
 ;;             buffer's point.
 ;;
 ;; C-c t - Toggle between implementation and test/example files.
