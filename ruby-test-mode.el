@@ -380,8 +380,8 @@ for the current buffer or the optional FILENAME."
   (interactive)
   (let ((filename (or filename (buffer-file-name))))
     (cond ((ruby-test-implementation-p filename)
-           (cond ((ruby-test-specification-filename filename)
-                  (find-file (ruby-test-specification-filename filename)))
+           (cond ((file-exists-p (ruby-test-specification-filename filename))
+                 (find-file (ruby-test-specification-filename filename)))
                  ((ruby-test-unit-filename filename)
                   (find-file (ruby-test-unit-filename filename)))
                  (t
