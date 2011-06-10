@@ -62,6 +62,10 @@
 Test Driven Development in Ruby."
   :group 'ruby)
 
+(defvar ruby-test-default-library
+  "test"
+  "Define the default test library")
+
 (defvar ruby-test-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-c .") 'ruby-test-run)
@@ -382,8 +386,10 @@ for the current buffer or the optional FILENAME."
     (cond ((ruby-test-implementation-p filename)
            (cond ((file-exists-p (ruby-test-specification-filename filename))
                  (find-file (ruby-test-specification-filename filename)))
-                 ((ruby-test-unit-filename filename)
+                 ((file-exists-p (ruby-test-unit-filename filename))
                   (find-file (ruby-test-unit-filename filename)))
+                 (or (ruby-test-default-test-filename filename)
+                     (find-file (ruby-test-default-test-filename filename)))
                  (t
                   (put-text-property 0 (length filename) 'face 'bold filename)
                   (message "Sorry, can't guess unit/specification filename from %s." filename))))
@@ -398,6 +404,16 @@ for the current buffer or the optional FILENAME."
 the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-unit-filename-mapping)))
+
+(defun ruby-test-default-test-filename (filename)
+  "Returns the default test filename"
+  (cond ((and (string-equal ruby-test-default-library "test")
+             (ruby-test-unit-filename filename))
+         (ruby-test-unit-filename filename))
+        ((and (string-equal ruby-test-default-library "spec")
+             (ruby-test-specification-filename filename))
+         (ruby-test-specification-filename filename))
+        (t nil)))
 
 (add-hook 'find-file-hooks 'ruby-test-find-file-hook)
 (provide 'ruby-test-mode)
