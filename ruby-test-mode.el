@@ -237,7 +237,8 @@ second element."
                                     "[ \t]*") nil t)
         (let ((name (match-string 2)))
           (if (string-match "^[\"']\\(.*\\)[\"']$" name)
-              (replace-regexp-in-string " +" "_" (match-string 1 name))
+              (replace-regexp-in-string "\\?" "\\\\\\\\?"
+                                        (replace-regexp-in-string " +" "_" (match-string 1 name)))
             (unless (string-equal "setup" name)
               name))))))
 
