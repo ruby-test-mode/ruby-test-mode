@@ -35,7 +35,7 @@
 ;; C-c C-c . - Runs the current buffer's file as an unit test or an
 ;;             rspec example.
 ;;
-;; C-c C-c . - Runs the unit test or rspec example at the current buffer's
+;; C-c C-c , - Runs the unit test or rspec example at the current buffer's
 ;;             buffer's point.
 ;;
 ;; C-c t - Toggle between implementation and test/example files.
@@ -61,6 +61,10 @@
   "Minor mode providing commands and helpers for Behavioural and
 Test Driven Development in Ruby."
   :group 'ruby)
+
+(defvar ruby-test-default-library
+  "test"
+  "Define the default test library")
 
 (defvar ruby-test-mode-map
   (let ((map (make-sparse-keymap)))
@@ -226,9 +230,16 @@ second element."
   (save-excursion
     (set-buffer (get-file-buffer file))
     (goto-line line)
+    (end-of-line)
     (message "%s:%s" (current-buffer) (point))
-    (if (re-search-backward ruby-test-search-testcase-re nil t)
-        (match-string 1))))
+    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\)[ \t]+"
+                                    "\\([\"'].*?[\"']\\|" ruby-symbol-re "*\\)"
+                                    "[ \t]*") nil t)
+        (let ((name (match-string 2)))
+          (if (string-match "^[\"']\\(.*\\)[\"']$" name)
+              (replace-regexp-in-string " +" "_" (match-string 1 name))
+            (unless (string-equal "setup" name)
+              name))))))
 
 (defun ruby-test-implementation-filename (&optional filename)
   "Returns the implementation filename for the current buffer's
@@ -289,7 +300,7 @@ depending on the filename."
       (if line-number
           (let ((test-case (ruby-test-find-testcase-at filename line-number)))
             (if test-case
-                (setq options (cons filename (list (format "--name=%s" test-case))))
+                (setq options (cons filename (list (format "--name /%s/" test-case))))
               (error "No test case at %s:%s" filename line-number)))))
      (t (message "File is not a known ruby test file")))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
@@ -380,10 +391,12 @@ for the current buffer or the optional FILENAME."
   (interactive)
   (let ((filename (or filename (buffer-file-name))))
     (cond ((ruby-test-implementation-p filename)
-           (cond ((ruby-test-specification-filename filename)
-                  (find-file (ruby-test-specification-filename filename)))
-                 ((ruby-test-unit-filename filename)
+           (cond ((file-exists-p (ruby-test-specification-filename filename))
+                 (find-file (ruby-test-specification-filename filename)))
+                 ((file-exists-p (ruby-test-unit-filename filename))
                   (find-file (ruby-test-unit-filename filename)))
+                 (or (ruby-test-default-test-filename filename)
+                     (find-file (ruby-test-default-test-filename filename)))
                  (t
                   (put-text-property 0 (length filename) 'face 'bold filename)
                   (message "Sorry, can't guess unit/specification filename from %s." filename))))
@@ -398,6 +411,16 @@ for the current buffer or the optional FILENAME."
 the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-unit-filename-mapping)))
+
+(defun ruby-test-default-test-filename (filename)
+  "Returns the default test filename"
+  (cond ((and (string-equal ruby-test-default-library "test")
+             (ruby-test-unit-filename filename))
+         (ruby-test-unit-filename filename))
+        ((and (string-equal ruby-test-default-library "spec")
+             (ruby-test-specification-filename filename))
+         (ruby-test-specification-filename filename))
+        (t nil)))
 
 (add-hook 'find-file-hooks 'ruby-test-find-file-hook)
 (provide 'ruby-test-mode)
