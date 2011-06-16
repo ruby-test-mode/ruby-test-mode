@@ -396,8 +396,8 @@ for the current buffer or the optional FILENAME."
                  (find-file (ruby-test-specification-filename filename)))
                  ((file-exists-p (ruby-test-unit-filename filename))
                   (find-file (ruby-test-unit-filename filename)))
-                 (or (ruby-test-default-test-filename filename)
-                     (find-file (ruby-test-default-test-filename filename)))
+                 ((ruby-test-default-test-filename filename)
+                  (find-file (ruby-test-default-test-filename filename)))
                  (t
                   (put-text-property 0 (length filename) 'face 'bold filename)
                   (message "Sorry, can't guess unit/specification filename from %s." filename))))
