@@ -106,8 +106,9 @@ minor mode."
     ("\\(.*\\)\\(spec/\\)\\(views\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5")
     ("\\(.*\\)\\(spec/\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3\\4\\5\\7")
     ("\\(.*\\)\\(spec/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
-    ("\\(.*\\)\\(test/\\)\\(unit/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/models/\\4\\5\\7")
+    ("\\(.*\\)\\(test/\\)\\(unit/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/models/\\4\\5\\7" "\\1lib/\\4\\5\\7")
     ("\\(.*\\)\\(test/\\)\\(functional/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/controllers/\\4\\5\\7")
+    ("\\(.*\\)\\(test/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
     ("\\(.*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3")
     ("\\(.*\\)\\(_test\\)\\(\\.rb\\)$" "\\1\\3"))
   "Regular expressions to map Ruby implementation to unit
@@ -132,7 +133,7 @@ match, the second the replace expression."
   '(
     ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/functional\\4_test\\5\\6")
     ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/unit\\4_test\\5\\6")
-    ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/unit/\\3\\4_test\\5\\6")
+    ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\3\\4_test\\5" "\\1test/unit/\\3\\4_test\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_test\\2"))
   "Regular expressions to map Ruby unit to implementation
 filenames. The first element in each list is the match, the
