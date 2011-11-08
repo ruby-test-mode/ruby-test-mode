@@ -288,24 +288,34 @@ as `ruby-test-run-file'"
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification
 depending on the filename."
+  (cond ((ruby-test-spec-p filename)
+         (setq category "spec")
+         (ruby-test-spec-command filename line-number))
+        ((ruby-test-p filename)
+         (setq category "test")
+         (ruby-test-test-command filename line-number))
+        (t (message "File is not a known ruby test file"))))
+
+(defun ruby-test-spec-command (filename &optional line-number)
   (let (command options)
-    (cond
-     ((ruby-test-spec-p filename)
-      (setq command (or (ruby-test-rspec-executable filename) spec))
-      (setq category "spec")
-      (setq options (cons "-b" options))
-      (if line-number
-          (setq options (cons "--line" (cons (format "%d" line-number) options)))))
-     ((ruby-test-p filename)
-      (setq command (or (ruby-test-ruby-executable) "ruby"))
-      (setq category "unit test")
-      (if line-number
-          (let ((test-case (ruby-test-find-testcase-at filename line-number)))
-            (if test-case
-                (setq options (cons filename (list (format "--name /%s/" test-case))))
-              (error "No test case at %s:%s" filename line-number)))))
-     (t (message "File is not a known ruby test file")))
+    (setq command (or (ruby-test-rspec-executable filename) spec))
+    (setq options (cons "-b" options))
+    (if line-number
+        (setq options (cons "--line" (cons (format "%d" line-number) options))))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
+
+(defun ruby-test-test-command (filename &optional line-number)
+  (let (command options name-options)
+    (setq command (or (ruby-test-ruby-executable) "ruby"))
+    (if (ruby-test-gem-root filename)
+        (setq options (cons "-rubygems" options)))
+    (setq options (cons "-I'lib:test'" options))
+    (if line-number
+        (let ((test-case (ruby-test-find-testcase-at filename line-number)))
+          (if test-case
+              (setq name-options (format "--name /%s/" test-case))
+            (error "No test case at %s:%s" filename line-number))))
+    (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
 
 (defun ruby-test-project-root (filename root-predicate)
   "Returns the project root directory for a FILENAME using the
@@ -344,6 +354,17 @@ Rails project, else nil."
   (and (ruby-test-ruby-root-p directory)
        (ruby-test-project-root-p directory
        '("config/environment.rb" "config/database.yml"))))
+
+(defun ruby-test-gem-root (filename)
+  "Returns the gem project directory for the given
+FILENAME, else nil."
+  (ruby-test-project-root filename 'ruby-test-gem-root-p))
+
+(defun ruby-test-gem-root-p (directory)
+  "Returns t if the given DIRECTORY is the root of a Ruby on
+gem, else nil."
+  (and (ruby-test-ruby-root-p directory)
+       (> (length (directory-files directory nil ".gemspec")) 0)))
 
 (defun ruby-test-rspec-executable (test-file)
   "Returns the spec executable to be used for the current buffer
