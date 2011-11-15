@@ -246,9 +246,9 @@ second element."
        "\\?" "\\\\\\\\?"
        (replace-regexp-in-string
         "'_?\\|(_?\\|)_?" ".*"
-        (replace-regexp-in-string " +" "_" (match-string 1 name)))))
+        (replace-regexp-in-string " +" "_" (match-string 1 name))))
     (unless (string-equal "setup" name)
-      name))
+      name)))
 
 (defun ruby-test-implementation-filename (&optional filename)
   "Returns the implementation filename for the current buffer's
