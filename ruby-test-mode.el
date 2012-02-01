@@ -233,7 +233,7 @@ second element."
     (goto-line line)
     (end-of-line)
     (message "%s:%s" (current-buffer) (point))
-    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\)[ \t]+"
+    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
                                     "\\([\"'].*?[\"']\\|" ruby-symbol-re "*\\)"
                                     "[ \t]*") nil t)
         (let ((name (match-string 2)))
