@@ -7,7 +7,7 @@
 ;;         Caspar Florian Ebeling <florian.ebeling@gmail.com>
 ;; Maintainer: Roman Scherer <roman.scherer@gmx.de>
 ;; Created: 09.02.08
-;; Version: 1.0
+;; Version: 1.1
 ;; Keywords: ruby unit test rspec
 
 ;; This software can be redistributed. GPL v2 applies.
