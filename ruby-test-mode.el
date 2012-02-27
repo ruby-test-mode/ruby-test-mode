@@ -246,7 +246,7 @@ second element."
        "\\?" "\\\\\\\\?"
        (replace-regexp-in-string
         "'_?\\|(_?\\|)_?" ".*"
-        (replace-regexp-in-string " +" "_" (match-string 1 name))))
+        (replace-regexp-in-string " +" "\\\\\\\\s+" (match-string 1 name))))
     (unless (string-equal "setup" name)
       name)))
 
