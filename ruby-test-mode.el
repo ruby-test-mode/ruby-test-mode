@@ -8,7 +8,7 @@
 ;;
 ;; Maintainer: Roman Scherer <roman.scherer@burningswell.com>
 ;; Created: 09.02.08
-;; Version: 1.3
+;; Version: 1.4
 ;; Keywords: ruby unit test rspec
 
 ;; This software can be redistributed. GPL v2 applies.
