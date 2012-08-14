@@ -5,9 +5,10 @@
 
 ;; Author: Roman Scherer <roman.scherer@gmx.de>
 ;;         Caspar Florian Ebeling <florian.ebeling@gmail.com>
-;; Maintainer: Roman Scherer <roman.scherer@gmx.de>
+;;
+;; Maintainer: Roman Scherer <roman.scherer@burningswell.com>
 ;; Created: 09.02.08
-;; Version: 1.0
+;; Version: 1.3
 ;; Keywords: ruby unit test rspec
 
 ;; This software can be redistributed. GPL v2 applies.
@@ -83,15 +84,6 @@ Test Driven Development in Ruby."
   :type '(list)
   :group 'ruby-test)
 
-(defcustom ruby-test-rspec-executables
-  '("/opt/local/bin/spec" "spec" "/usr/bin/spec" "/usr/local/bin/spec")
-  "*A list of spec executables. If the spec does not belong to a
-  rails project, then non-absolute paths get expanded using
-  `PATH'; The first existing will get picked. In a rails project
-  the `script/spec' script will be invoked."
-  :type '(list)
-  :group 'ruby-test)
-
 (defcustom ruby-test-file-name-extensions
   '("builder" "erb" "haml" "rb" "rjs")
   "*A list of filename extensions that trigger the loading of the
@@ -106,8 +98,9 @@ minor mode."
     ("\\(.*\\)\\(spec/\\)\\(views\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5")
     ("\\(.*\\)\\(spec/\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3\\4\\5\\7")
     ("\\(.*\\)\\(spec/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
-    ("\\(.*\\)\\(test/\\)\\(unit/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/models/\\4\\5\\7")
+    ("\\(.*\\)\\(test/\\)\\(unit/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/models/\\4\\5\\7" "\\1lib/\\4\\5\\7")
     ("\\(.*\\)\\(test/\\)\\(functional/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/controllers/\\4\\5\\7")
+    ("\\(.*\\)\\(test/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
     ("\\(.*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3")
     ("\\(.*\\)\\(_test\\)\\(\\.rb\\)$" "\\1\\3"))
   "Regular expressions to map Ruby implementation to unit
@@ -132,7 +125,7 @@ match, the second the replace expression."
   '(
     ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/functional\\4_test\\5\\6")
     ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/unit\\4_test\\5\\6")
-    ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/unit/\\3\\4_test\\5\\6")
+    ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\3\\4_test\\5" "\\1test/unit/\\3\\4_test\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_test\\2"))
   "Regular expressions to map Ruby unit to implementation
 filenames. The first element in each list is the match, the
@@ -232,14 +225,22 @@ second element."
     (goto-line line)
     (end-of-line)
     (message "%s:%s" (current-buffer) (point))
-    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\)[ \t]+"
+    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
                                     "\\([\"'].*?[\"']\\|" ruby-symbol-re "*\\)"
                                     "[ \t]*") nil t)
         (let ((name (match-string 2)))
-          (if (string-match "^[\"']\\(.*\\)[\"']$" name)
-              (replace-regexp-in-string " +" "_" (match-string 1 name))
-            (unless (string-equal "setup" name)
-              name))))))
+          (ruby-test-tescase-name name)))))
+
+(defun ruby-test-tescase-name (name)
+  "Returns the sanitized name of the test"
+  (if (string-match "^[\"']\\(.*\\)[\"']$" name)
+      (replace-regexp-in-string
+       "\\?" "\\\\\\\\?"
+       (replace-regexp-in-string
+        "'_?\\|(_?\\|)_?" ".*"
+        (replace-regexp-in-string " +" "_" (match-string 1 name))))
+    (unless (string-equal "setup" name)
+      name)))
 
 (defun ruby-test-implementation-filename (&optional filename)
   "Returns the implementation filename for the current buffer's
@@ -286,24 +287,34 @@ as `ruby-test-run-file'"
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification
 depending on the filename."
+  (cond ((ruby-test-spec-p filename)
+         (setq category "spec")
+         (ruby-test-spec-command filename line-number))
+        ((ruby-test-p filename)
+         (setq category "test")
+         (ruby-test-test-command filename line-number))
+        (t (message "File is not a known ruby test file"))))
+
+(defun ruby-test-spec-command (filename &optional line-number)
   (let (command options)
-    (cond
-     ((ruby-test-spec-p filename)
-      (setq command (or (ruby-test-rspec-executable filename) spec))
-      (setq category "spec")
-      (setq options (cons "-b" options))
-      (if line-number
-          (setq options (cons "--line" (cons (format "%d" line-number) options)))))
-     ((ruby-test-p filename)
-      (setq command (or (ruby-test-ruby-executable) "ruby"))
-      (setq category "unit test")
-      (if line-number
-          (let ((test-case (ruby-test-find-testcase-at filename line-number)))
-            (if test-case
-                (setq options (cons filename (list (format "--name /%s/" test-case))))
-              (error "No test case at %s:%s" filename line-number)))))
-     (t (message "File is not a known ruby test file")))
+    (setq command "bundle exec rspec")
+    (setq options (cons "-b" options))
+    (if line-number
+        (setq options (cons "--line" (cons (format "%d" line-number) options))))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
+
+(defun ruby-test-test-command (filename &optional line-number)
+  (let (command options name-options)
+    (setq command (or (ruby-test-ruby-executable) "ruby"))
+    (if (ruby-test-gem-root filename)
+        (setq options (cons "-rubygems" options)))
+    (setq options (cons "-I'lib:test'" options))
+    (if line-number
+        (let ((test-case (ruby-test-find-testcase-at filename line-number)))
+          (if test-case
+              (setq name-options (format "--name /%s/" test-case))
+            (error "No test case at %s:%s" filename line-number))))
+    (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
 
 (defun ruby-test-project-root (filename root-predicate)
   "Returns the project root directory for a FILENAME using the
@@ -343,23 +354,16 @@ Rails project, else nil."
        (ruby-test-project-root-p directory
        '("config/environment.rb" "config/database.yml"))))
 
-(defun ruby-test-rspec-executable (test-file)
-  "Returns the spec executable to be used for the current buffer
-test-file or the given one. If (buffer) test-file is inside of a
-rails project, the project executable is returned, else the first
-existing default executable. If the default executable is
-relative, it is assumed to be somewhere in `PATH'."
-  (interactive "b")
-  (if (not (buffer-file-name (get-buffer test-file)))
-      (error "%s" "Cannot find spec relative to non-file buffer"))
-  (let ((executables (copy-sequence ruby-test-rspec-executables)))
-    (if (ruby-test-rails-root test-file)
-        (add-to-list 'executables (concat (ruby-test-rails-root test-file)
-                                          "script/spec")))
-    (setq executables (mapcar 'ruby-test-expand-executable-path
-                              executables))
-    (let ((spec (car (select 'file-readable-p executables))))
-      spec)))
+(defun ruby-test-gem-root (filename)
+  "Returns the gem project directory for the given
+FILENAME, else nil."
+  (ruby-test-project-root filename 'ruby-test-gem-root-p))
+
+(defun ruby-test-gem-root-p (directory)
+  "Returns t if the given DIRECTORY is the root of a Ruby on
+gem, else nil."
+  (and (ruby-test-ruby-root-p directory)
+       (> (length (directory-files directory nil ".gemspec")) 0)))
 
 (defun ruby-test-ruby-executable ()
   "Returns the ruby binary to be used."
@@ -395,8 +399,8 @@ for the current buffer or the optional FILENAME."
                  (find-file (ruby-test-specification-filename filename)))
                  ((file-exists-p (ruby-test-unit-filename filename))
                   (find-file (ruby-test-unit-filename filename)))
-                 (or (ruby-test-default-test-filename filename)
-                     (find-file (ruby-test-default-test-filename filename)))
+                 ((ruby-test-default-test-filename filename)
+                  (find-file (ruby-test-default-test-filename filename)))
                  (t
                   (put-text-property 0 (length filename) 'face 'bold filename)
                   (message "Sorry, can't guess unit/specification filename from %s." filename))))
