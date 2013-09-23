@@ -286,7 +286,7 @@ depending on the filename."
 
 (defun ruby-test-test-command (filename &optional line-number)
   (let (command options name-options)
-    (setq command (or (ruby-test-ruby-executable) "ruby"))
+    (setq command (concat "bundle exec " (or (ruby-test-ruby-executable) "ruby")))
     (if (ruby-test-gem-root filename)
         (setq options (cons "-rubygems" options)))
     (setq options (cons "-I'lib:test'" options))
