@@ -261,7 +261,6 @@ as `ruby-test-run-file'"
           (save-excursion
             (set-buffer test-file-buffer)
             (let ((line (line-number-at-pos (point))))
-              (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
               (compilation-start (ruby-test-command filename line) t)))
         (message ruby-test-not-found-message)))))
 
@@ -286,7 +285,7 @@ depending on the filename."
 
 (defun ruby-test-test-command (filename &optional line-number)
   (let (command options name-options)
-    (setq command (concat "bundle exec " (or (ruby-test-ruby-executable) "ruby")))
+    (setq command "bundle exec ruby")
     (if (ruby-test-gem-root filename)
         (setq options (cons "-rubygems" options)))
     (setq options (cons "-I'lib:test'" options))
