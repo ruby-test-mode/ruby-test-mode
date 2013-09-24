@@ -8,7 +8,7 @@
 ;;
 ;; Maintainer: Roman Scherer <roman.scherer@burningswell.com>
 ;; Created: 09.02.08
-;; Version: 1.6
+;; Version: 1.7
 ;; Keywords: ruby unit test rspec
 ;; Package-Requires: ((ruby-mode "1.0"))
 
