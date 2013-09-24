@@ -61,15 +61,6 @@ Test Driven Development in Ruby."
     map)
   "The keymap used in `ruby-test-mode' buffers.")
 
-(defcustom ruby-test-ruby-executables
-  '("/opt/local/bin/ruby" "/usr/bin/ruby" "ruby" "ruby1.9")
-  "*A list of ruby executables to use. Non-absolute paths get
-  expanded using `PATH'. The first existing will get picked. Set
-  this variable to use the implementation you intend to test
-  with."
-  :type '(list)
-  :group 'ruby-test)
-
 (defcustom ruby-test-file-name-extensions
   '("builder" "erb" "haml" "rb" "rjs")
   "*A list of filename extensions that trigger the loading of the
@@ -150,11 +141,6 @@ non-nil."
 (defun ruby-test-any-p (filename)
   (or (ruby-test-spec-p filename)
       (ruby-test-p filename)))
-
-(defun ruby-test-expand-executable-path (name)
-  (if (file-name-absolute-p name)
-      name
-    (executable-find name)))
 
 (defun ruby-test-file-name-extension-p (&optional filename)
   "Returns t if the minor mode should be enabled for the current
@@ -261,7 +247,6 @@ as `ruby-test-run-file'"
           (save-excursion
             (set-buffer test-file-buffer)
             (let ((line (line-number-at-pos (point))))
-              (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
               (compilation-start (ruby-test-command filename line) t)))
         (message ruby-test-not-found-message)))))
 
@@ -286,7 +271,7 @@ depending on the filename."
 
 (defun ruby-test-test-command (filename &optional line-number)
   (let (command options name-options)
-    (setq command (concat "bundle exec " (or (ruby-test-ruby-executable) "ruby")))
+    (setq command "bundle exec ruby")
     (if (ruby-test-gem-root filename)
         (setq options (cons "-rubygems" options)))
     (setq options (cons "-I'lib:test'" options))
@@ -345,13 +330,6 @@ FILENAME, else nil."
 gem, else nil."
   (and (ruby-test-ruby-root-p directory)
        (> (length (directory-files directory nil ".gemspec")) 0)))
-
-(defun ruby-test-ruby-executable ()
-  "Returns the ruby binary to be used."
-  (car (select 'file-readable-p
-               (select 'identity
-                       (mapcar 'ruby-test-expand-executable-path
-                               ruby-test-ruby-executables)))))
 
 (defun ruby-test-ruby-root (filename)
   "Returns the Ruby project directory for the given FILENAME,
