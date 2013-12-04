@@ -174,7 +174,7 @@ second element."
             (regexp-replace-candidates (cdr (car mapping))))
         (if (string-match regexp-match filename)
             (let ((target-filename-candidates
-                   (mapcar '(lambda (regexp)
+                   (mapcar #'(lambda (regexp)
                               (replace-match regexp nil nil filename nil))
                            regexp-replace-candidates)))
               (setq target-filename
