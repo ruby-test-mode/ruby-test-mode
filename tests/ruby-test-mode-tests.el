@@ -26,3 +26,13 @@
   (should (equal "test_with_question_mark_\\\\?" (ruby-test-tescase-name "\"test with question mark ?\"")))
   (should (equal "test_with_quotes_.*somewhere" (ruby-test-tescase-name "\"test with quotes ' somewhere\"")))
   (should (equal "test_with_parenthesis_.*somewhere.*" (ruby-test-tescase-name "\"test with parenthesis (somewhere)\""))))
+
+(ert-deftest ruby-test-specification-filename ()
+  (should (equal "spec/models/file_spec.rb" (ruby-test-specification-filename "app/models/file.rb")))
+  (should (equal "spec/controllers/file_spec.rb" (ruby-test-specification-filename "app/controllers/file.rb")))
+  (should (equal "spec/helpers/file_spec.rb" (ruby-test-specification-filename "app/helpers/file.rb")))
+  (should (equal "spec/views/posts/new.html.erb_spec.rb" (ruby-test-specification-filename "app/views/posts/new.html.erb")))
+  (should (equal "spec/services/some_service/file_spec.rb" (ruby-test-specification-filename "app/services/some_service/file.rb")))
+  (should (equal "spec/lib/something/file_spec.rb" (ruby-test-specification-filename "lib/something/file.rb")))
+  (should (equal "spec/lib/some_lib/file_spec.rb" (ruby-test-specification-filename "lib/some_lib/file.rb")))
+  (should (equal "something/file_spec.rb" (ruby-test-specification-filename "something/file.rb"))))

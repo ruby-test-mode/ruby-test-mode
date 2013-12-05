@@ -88,9 +88,9 @@ second the replace expression."
 
 (defcustom ruby-test-specification-filename-mapping
   '(
-    ("\\(.*\\)\\(app/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3\\4_spec\\5\\6")
-    ("\\(.*\\)\\(app/views\\)\\(.*\\)$" "\\1spec/views\\3\\4_spec\\5\\6.rb")
-    ("\\(.*\\)\\(lib\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\2\\3_spec\\4\\5" "\\1spec\\3_spec\\4\\5")
+    ("\\(.*\\)\\(app/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3\\4_spec\\5")
+    ("\\(.*\\)\\(app/views\\)\\(.*\\)$" "\\1spec/views\\3_spec.rb")
+    ("\\(.*?\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\2\\3\\4_spec\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_spec\\2"))
   "Regular expressions to map Ruby specification to
 implementation filenames). The first element in each list is the
