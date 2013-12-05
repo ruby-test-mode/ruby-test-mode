@@ -174,7 +174,7 @@ second element."
             (regexp-replace-candidates (cdr (car mapping))))
         (if (string-match regexp-match filename)
             (let ((target-filename-candidates
-                   (mapcar '(lambda (regexp)
+                   (mapcar #'(lambda (regexp)
                               (replace-match regexp nil nil filename nil))
                            regexp-replace-candidates)))
               (setq target-filename
@@ -263,7 +263,9 @@ depending on the filename."
 
 (defun ruby-test-spec-command (filename &optional line-number)
   (let (command options)
-    (setq command "bundle exec rspec")
+    (if (file-exists-p ".zeus.sock")
+        (setq command "zeus rspec")
+      (setq command "bundle exec rspec"))
     (setq options (cons "-b" options))
     (if line-number
         (setq options (cons "--line" (cons (format "%d" line-number) options))))
@@ -271,7 +273,9 @@ depending on the filename."
 
 (defun ruby-test-test-command (filename &optional line-number)
   (let (command options name-options)
-    (setq command "bundle exec ruby")
+    (if (file-exists-p ".zeus.sock")
+        (setq command "zeus test")
+      (setq command "bundle exec ruby"))
     (if (ruby-test-gem-root filename)
         (setq options (cons "-rubygems" options)))
     (setq options (cons "-I'lib:test'" options))
