@@ -231,9 +231,7 @@ filename is a Ruby implementation file."
   (interactive)
   (let ((filename (ruby-test-find-file)))
     (if filename
-        (progn
-          (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
-          (compilation-start (ruby-test-command filename) t))
+        (ruby-test-run-command (ruby-test-command filename))
       (message ruby-test-not-found-message))))
 
 (defun ruby-test-run-at-point ()
@@ -247,8 +245,12 @@ as `ruby-test-run-file'"
           (save-excursion
             (set-buffer test-file-buffer)
             (let ((line (line-number-at-pos (point))))
-              (compilation-start (ruby-test-command filename line) t)))
+              (ruby-test-run-command (ruby-test-command filename line))))
         (message ruby-test-not-found-message)))))
+
+(defun ruby-test-run-command (command)
+  (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
+  (compilation-start command t))
 
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification
