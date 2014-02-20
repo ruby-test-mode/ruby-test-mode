@@ -285,7 +285,8 @@ depending on the filename."
         (let ((test-case (ruby-test-find-testcase-at filename line-number)))
           (if test-case
               (setq name-options (format "--name /%s/" test-case))
-            (error "No test case at %s:%s" filename line-number))))
+            (error "No test case at %s:%s" filename line-number)))
+      (setq name-options ""))
     (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
 
 (defun ruby-test-project-root (filename root-predicate)
