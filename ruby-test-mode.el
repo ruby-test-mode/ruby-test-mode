@@ -72,6 +72,7 @@ minor mode."
   '(
     ("\\(.*\\)\\(spec/controllers/\\)\\(.*\\)\\([^/]*\\)\\(_routing_spec\\)\\(\\.rb\\)$" "\\1config/routes.rb")
     ("\\(.*\\)\\(spec/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
+    ("\\(.*\\)\\(test/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
     ("\\(.*\\)\\(spec/\\)\\(views\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5")
     ("\\(.*\\)\\(spec/\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3\\4\\5\\7")
     ("\\(.*\\)\\(spec/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
@@ -100,8 +101,8 @@ match, the second the replace expression."
 
 (defcustom ruby-test-unit-filename-mapping
   '(
-    ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/functional\\4_test\\5\\6")
-    ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/unit\\4_test\\5\\6")
+    ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\(controllers\\|functional\\)\\4_test\\5\\6")
+    ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\(models\\|unit\\)\\4_test\\5\\6")
     ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\3\\4_test\\5" "\\1test/unit/\\3\\4_test\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_test\\2"))
   "Regular expressions to map Ruby unit to implementation
