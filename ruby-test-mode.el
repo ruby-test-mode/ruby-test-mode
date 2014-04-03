@@ -250,7 +250,9 @@ as `ruby-test-run-file'"
         (message ruby-test-not-found-message)))))
 
 (defun ruby-test-run-command (command)
-  (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
+  (setq default-directory (or (ruby-test-rails-root filename)
+                              (ruby-test-ruby-root filename)
+                              default-directory))
   (compilation-start command t))
 
 (defun ruby-test-command (filename &optional line-number)
