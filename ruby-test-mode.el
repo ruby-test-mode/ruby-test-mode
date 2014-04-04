@@ -89,7 +89,7 @@ second the replace expression."
 
 (defcustom ruby-test-specification-filename-mapping
   '(
-    ("\\(.*\\)\\(app/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3\\4_spec\\5")
+    ("\\(.*\\)\\(app/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3\\4_spec\\5" "\\1test/\\3\\4_test\\5")
     ("\\(.*\\)\\(app/views\\)\\(.*\\)$" "\\1spec/views\\3_spec.rb")
     ("\\(.*?\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\2\\3\\4_spec\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_spec\\2"))
