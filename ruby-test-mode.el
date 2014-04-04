@@ -250,7 +250,9 @@ as `ruby-test-run-file'"
         (message ruby-test-not-found-message)))))
 
 (defun ruby-test-run-command (command)
-  (setq default-directory (or (ruby-test-rails-root filename) (ruby-test-ruby-root filename)))
+  (setq default-directory (or (ruby-test-rails-root filename)
+                              (ruby-test-ruby-root filename)
+                              default-directory))
   (compilation-start command t))
 
 (defun ruby-test-command (filename &optional line-number)
@@ -348,7 +350,9 @@ else nil."
   "Returns t if the given DIRECTORY is the root of a Ruby
 project, else nil."
   (or (ruby-test-project-root-p directory '("Rakefile"))
-      (ruby-test-project-root-p directory '("Rakefile.rb"))))
+      (ruby-test-project-root-p directory '("Rakefile.rb"))
+      (ruby-test-project-root-p directory '("spec"))
+      (ruby-test-project-root-p directory '("test"))))
 
 (defun ruby-test-specification-filename (&optional filename)
   "Returns the specification filename for the current buffer's
