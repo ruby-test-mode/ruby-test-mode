@@ -227,6 +227,7 @@ filename is a Ruby implementation file."
 
 (defvar ruby-test-not-found-message "No test among visible buffers or run earlier.")
 
+;;;###autoload
 (defun ruby-test-run ()
   "Run the current buffer's file as specification or unit test."
   (interactive)
@@ -235,6 +236,7 @@ filename is a Ruby implementation file."
         (ruby-test-run-command (ruby-test-command filename))
       (message ruby-test-not-found-message))))
 
+;;;###autoload
 (defun ruby-test-run-at-point ()
   "Run test at point individually, using the same search strategy
 as `ruby-test-run-file'"
@@ -360,6 +362,7 @@ filename or the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-specification-filename-mapping)))
 
+;;;###autoload
 (defun ruby-test-toggle-implementation-and-specification (&optional filename)
   "Toggle between the implementation and specification/test file
 for the current buffer or the optional FILENAME."
