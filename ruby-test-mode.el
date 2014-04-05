@@ -177,7 +177,8 @@ second element."
             (let ((target-filename-candidates
                    (mapcar #'(lambda (regexp)
                               (replace-match regexp nil nil filename nil))
-                           regexp-replace-candidates)))
+                           regexp-replace-candidates))
+                  exist-filename)
               (setq target-filename
                     (or (dolist (filename target-filename-candidates exist-filename)
                           (setq exist-filename (if (file-exists-p filename)
@@ -188,9 +189,9 @@ second element."
     target-filename))
 
 (defun ruby-test-find-testcase-at (file line)
-  (save-excursion
-    (set-buffer (get-file-buffer file))
-    (goto-line line)
+  (with-current-buffer (get-file-buffer file)
+    (goto-char (point-min))
+    (forward-line (1- line))
     (end-of-line)
     (message "%s:%s" (current-buffer) (point))
     (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
@@ -245,8 +246,7 @@ as `ruby-test-run-file'"
     (let ((test-file-buffer (get-file-buffer filename)))
       (if (and filename
                test-file-buffer)
-          (save-excursion
-            (set-buffer test-file-buffer)
+          (with-current-buffer test-file-buffer
             (let ((line (line-number-at-pos (point))))
               (ruby-test-run-command (ruby-test-command filename line))))
         (message ruby-test-not-found-message)))))
@@ -261,10 +261,8 @@ as `ruby-test-run-file'"
   "Return the command to run a unit test or a specification
 depending on the filename."
   (cond ((ruby-test-spec-p filename)
-         (setq category "spec")
          (ruby-test-spec-command filename line-number))
         ((ruby-test-p filename)
-         (setq category "test")
          (ruby-test-test-command filename line-number))
         (t (message "File is not a known ruby test file"))))
 
