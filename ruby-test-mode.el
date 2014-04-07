@@ -49,6 +49,13 @@
 Test Driven Development in Ruby."
   :group 'ruby)
 
+(defcustom ruby-test-rspec-options
+  '("-b")
+  "Pass extra command line options to RSpec when running specs."
+  :initialize 'custom-initialize-default
+  :type '(list)
+  :group 'ruby-test)
+
 (defvar ruby-test-default-library
   "test"
   "Define the default test library")
@@ -271,7 +278,7 @@ depending on the filename."
     (if (file-exists-p ".zeus.sock")
         (setq command "zeus rspec")
       (setq command "bundle exec rspec"))
-    (setq options (cons "-b" options))
+    (setq options ruby-test-rspec-options)
     (if line-number
         (setq options (cons "--line" (cons (format "%d" line-number) options))))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
