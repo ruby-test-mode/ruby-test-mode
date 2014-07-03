@@ -3,9 +3,9 @@
 (require 'ruby-test-mode)
 
 (ert-deftest ruby-test-unit-filename ()
-  (should (equal "test/functional/path/controller_test.rb" (ruby-test-unit-filename "app/controllers/path/controller.rb")))
+  (should (equal "test/controllers/path/controller_test.rb" (ruby-test-unit-filename "app/controllers/path/controller.rb")))
 
-  (should (equal "test/unit/path/model_test.rb" (ruby-test-unit-filename "app/models/path/model.rb")))
+  (should (equal "test/models/path/model_test.rb" (ruby-test-unit-filename "app/models/path/model.rb")))
 
   (should (equal "test/file_test.rb" (ruby-test-unit-filename "lib/file.rb")))
 
