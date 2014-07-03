@@ -108,8 +108,8 @@ match, the second the replace expression."
 
 (defcustom ruby-test-unit-filename-mapping
   '(
-    ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\(controllers\\|functional\\)\\4_test\\5\\6")
-    ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\(models\\|unit\\)\\4_test\\5\\6")
+    ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/controllers\\4_test\\5\\6" "\\1test/functional\\4_test\\5\\6" )
+    ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/models\\4_test\\5\\6" "\\1test/unit\\4_test\\5\\6")
     ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\3\\4_test\\5" "\\1test/unit/\\3\\4_test\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_test\\2"))
   "Regular expressions to map Ruby unit to implementation
