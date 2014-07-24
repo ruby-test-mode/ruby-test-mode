@@ -21,11 +21,13 @@
                             nil)))
       (should (equal "other/exists_test.rb" (ruby-test-find-target-filename "exists.rb" mapping))))))
 
-(ert-deftest ruby-test-tescase-name ()
-  (should (equal nil (ruby-test-tescase-name "setup")))
-  (should (equal "test_with_question_mark_\\\\?" (ruby-test-tescase-name "\"test with question mark ?\"")))
-  (should (equal "test_with_quotes_.*somewhere" (ruby-test-tescase-name "\"test with quotes ' somewhere\"")))
-  (should (equal "test_with_parenthesis_.*somewhere.*" (ruby-test-tescase-name "\"test with parenthesis (somewhere)\""))))
+(ert-deftest ruby-test-testcase-name ()
+  (should (equal nil (ruby-test-testcase-name "setup" "def")))
+  (should (equal "test_with_question_mark_\\\\?" (ruby-test-testcase-name "\"test with question mark ?\"" "def")))
+  (should (equal "test_with_quotes_.*somewhere" (ruby-test-testcase-name "\"test with quotes ' somewhere\"" "def")))
+  (should (equal "test_with_parenthesis_.*somewhere.*" (ruby-test-testcase-name "\"test with parenthesis (somewhere)\"" "def")))
+  (should (equal "test with spaces from minitest" (ruby-test-testcase-name "test with spaces from minitest" "it")))
+  )
 
 (ert-deftest ruby-test-specification-filename ()
   (should (equal "spec/models/file_spec.rb" (ruby-test-specification-filename "app/models/file.rb")))

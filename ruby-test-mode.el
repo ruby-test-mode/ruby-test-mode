@@ -202,21 +202,27 @@ second element."
     (end-of-line)
     (message "%s:%s" (current-buffer) (point))
     (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
-                                    "\\([\"'].*?[\"']\\|" ruby-symbol-re "*\\)"
+                                    "\\([\"']\\(.*?\\)[\"']\\|" ruby-symbol-re "*\\)"
                                     "[ \t]*") nil t)
-        (let ((name (match-string 2)))
-          (ruby-test-tescase-name name)))))
+        (let ((name (match-string 3))
+              (method (match-string 1)))
+          (ruby-test-testcase-name name method)))))
 
-(defun ruby-test-tescase-name (name)
+(defun ruby-test-testcase-name (name method)
   "Returns the sanitized name of the test"
-  (if (string-match "^[\"']\\(.*\\)[\"']$" name)
-      (replace-regexp-in-string
-       "\\?" "\\\\\\\\?"
-       (replace-regexp-in-string
-        "'_?\\|(_?\\|)_?" ".*"
-        (replace-regexp-in-string " +" "_" (match-string 1 name))))
-    (unless (string-equal "setup" name)
-      name)))
+  (cond
+   ;; assume methods created with it are from minitest
+   ;; so no need to sanitize them
+   ((string= method "it")
+    name)
+   ((string= name "setup")
+    nil)
+   ((string-match "^[\"']\\(.*\\)[\"']$" name)
+    (replace-regexp-in-string
+     "\\?" "\\\\\\\\?"
+     (replace-regexp-in-string
+      "'_?\\|(_?\\|)_?" ".*"
+      (replace-regexp-in-string " +" "_" (match-string 1 name)))))))
 
 (defun ruby-test-implementation-filename (&optional filename)
   "Returns the implementation filename for the current buffer's
@@ -294,7 +300,7 @@ depending on the filename."
     (if line-number
         (let ((test-case (ruby-test-find-testcase-at filename line-number)))
           (if test-case
-              (setq name-options (format "--name /%s/" test-case))
+              (setq name-options (format "--name \"/%s/\"" test-case))
             (error "No test case at %s:%s" filename line-number)))
       (setq name-options ""))
     (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
