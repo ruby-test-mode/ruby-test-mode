@@ -69,7 +69,7 @@ Test Driven Development in Ruby."
   "The keymap used in `ruby-test-mode' buffers.")
 
 (defcustom ruby-test-file-name-extensions
-  '("builder" "erb" "haml" "rb" "rjs")
+  '("builder" "erb" "haml" "rb" "rjs" "js" "coffee")
   "*A list of filename extensions that trigger the loading of the
 minor mode."
   :type '(list)
@@ -77,17 +77,29 @@ minor mode."
 
 (defcustom ruby-test-implementation-filename-mapping
   '(
-    ("\\(.*\\)\\(spec/controllers/\\)\\(.*\\)\\([^/]*\\)\\(_routing_spec\\)\\(\\.rb\\)$" "\\1config/routes.rb")
-    ("\\(.*\\)\\(spec/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
-    ("\\(.*\\)\\(test/\\)\\(controllers\\|helpers\\|models\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
-    ("\\(.*\\)\\(spec/\\)\\(views\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5")
-    ("\\(.*\\)\\(spec/\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3\\4\\5\\7")
+    ("\\(.*\\)\\(spec/routing/routes_spec.rb\\)$" "\\1config/routes.rb")
+    ("\\(.*\\)\\(test/routing/routes_spec.rb\\)$" "\\1config/routes.rb")
+
+    ("\\(.*\\)\\(spec/\\)\\(controllers/\\|models/\\|views/\\|helpers/\\|mailers/\\|uploaders/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7") ("\\(.*\\)\\(test/\\)\\(controllers/\\|models/\\|views/\\|helpers/\\|mailers/\\|uploaders/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
+
+    ("\\(.*\\)\\(spec/\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1lib/\\3\\5")
+    ("\\(.*\\)\\(test/\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1lib/\\3\\5")
+
     ("\\(.*\\)\\(spec/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
+    ("\\(.*\\)\\(test/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
+
+    ("\\(.*\\)\\(spec/\\)\\(.*\\)\\([^/]*\\)\\(_tasks\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3\\4.rake")
+    ("\\(.*\\)\\(test/\\)\\(.*\\)\\([^/]*\\)\\(_tasks\\)\\(_test\\)\\(\\.rb\\)$" "\\1\\3\\4.rake")
+
+    ("\\(.*\\)\\(spec/\\)\\(javascripts\\|coffeescripts\\)\\(.*\\)\\([^/]*\\)\\(_spec\\|-spec\\)\\(\\.js\\|\.coffee\\)$" "\\1app/assets/\\3\\4\\5\\7")
+    ("\\(.*\\)\\(test/\\)\\(javascripts\\|coffeescripts\\)\\(.*\\)\\([^/]*\\)\\(_test\\|-test\\)\\(\\.js\\|\.coffee\\)$" "\\1app/assets/\\3\\4\\5\\7")
+
     ("\\(.*\\)\\(test/\\)\\(unit/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/models/\\4\\5\\7" "\\1lib/\\4\\5\\7")
     ("\\(.*\\)\\(test/\\)\\(functional/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/controllers/\\4\\5\\7")
-    ("\\(.*\\)\\(test/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1lib/\\3\\4\\6")
+
     ("\\(.*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1\\3")
-    ("\\(.*\\)\\(_test\\)\\(\\.rb\\)$" "\\1\\3"))
+    ("\\(.*\\)\\(_test\\)\\(\\.rb\\)$" "\\1\\3")
+    )
   "Regular expressions to map Ruby implementation to unit
 filenames). The first element in each list is the match, the
 second the replace expression."
@@ -96,10 +108,22 @@ second the replace expression."
 
 (defcustom ruby-test-specification-filename-mapping
   '(
+    ("\\(.*\\)\\(config/routes.rb\\)" "\\1spec/routing/routes_spec.rb" "\\1test/routing/routes_test.rb")
+
+    ;; ("\\(.*\\)\\(app/\\)\\(controllers/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\3\\4\\5_test\\6" "\\1spec/\\3\\4\\5_spec\\6")
+
     ("\\(.*\\)\\(app/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3\\4_spec\\5" "\\1test/\\3\\4_test\\5")
-    ("\\(.*\\)\\(app/views\\)\\(.*\\)$" "\\1spec/views\\3_spec.rb")
-    ("\\(.*?\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\2\\3\\4_spec\\5")
-    ("\\(.*\\)\\(\\.rb\\)$" "\\1_spec\\2"))
+
+    ("\\(.*\\)\\(lib/\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3_spec\\4" "\\1test/\\3_test\\4")
+
+    ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1spec/\\3\\4_spec\\5" "\\1test/\\3\\4_test\\5")
+
+    ("\\(.*\\)\\(lib/tasks/\\)\\(.*\\)\\([^/]*\\)\\(\\.rake\\)$" "\\1spec/\\2\\3\\4_tasks_spec.rb" "\\1test/\\2\\3\\4_tasks_test.rb")
+
+    ("\\(.*\\)\\(app/assets/\\)\\(.*\\)\\([^/]*\\)\\(\\.js\\|\\.coffee\\)$" "\\1spec/\\3\\4_spec\\5" "\\1test/\\3\\4_test\\5")
+
+    ("\\(.*\\)\\(\\.rb\\)$" "\\1_spec\\2" "\\1_test\\2")
+    )
   "Regular expressions to map Ruby specification to
 implementation filenames). The first element in each list is the
 match, the second the replace expression."
@@ -108,8 +132,8 @@ match, the second the replace expression."
 
 (defcustom ruby-test-unit-filename-mapping
   '(
-    ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/controllers\\4_test\\5\\6" "\\1test/functional\\4_test\\5\\6" )
-    ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/models\\4_test\\5\\6" "\\1test/unit\\4_test\\5\\6")
+    ("\\(.*\\)\\(app/\\)\\(controllers\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/functional\\4\\5_test\\6")
+    ("\\(.*\\)\\(app/\\)\\(models\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/unit\\4\\5_test\\6")
     ("\\(.*\\)\\(lib/\\)\\(.*\\)\\([^/]*\\)\\(\\.rb\\)$" "\\1test/\\3\\4_test\\5" "\\1test/unit/\\3\\4_test\\5")
     ("\\(.*\\)\\(\\.rb\\)$" "\\1_test\\2"))
   "Regular expressions to map Ruby unit to implementation
@@ -141,10 +165,10 @@ non-nil."
 (defalias 'find-all 'select)
 
 (defun ruby-test-spec-p (filename)
-  (and (stringp filename) (string-match "spec\.rb$" filename)))
+  (and (stringp filename) (string-match "spec\\.\\(rb\\|js\\|coffee\\)$" filename)))
 
 (defun ruby-test-p (filename)
-  (and (stringp filename) (string-match "test\.rb$" filename)))
+  (and (stringp filename) (string-match "test\\.\\(rb\\|js\\|coffee\\)$" filename)))
 
 (defun ruby-test-any-p (filename)
   (or (ruby-test-spec-p filename)
@@ -235,9 +259,9 @@ filename or the optional FILENAME, else nil."
 filename is a Ruby implementation file."
   (let ((filename (or filename buffer-file-name)))
     (and (file-readable-p filename)
-         (string-match "\\(\\.builder\\)\\|\\(\\.erb\\)\\|\\(\\.haml\\)\\|\\(\\.rb\\)$" filename)
-         (not (string-match "_spec\\.rb$" filename))
-         (not (string-match "_test\\.rb$" filename)))))
+         (string-match "\\.\\(builder\\|erb\\|haml\\|rb\\|js\\|coffee\\|rake\\)$" filename)
+         (not (string-match "\\(_\\|-\\)spec\\.\\(rb\\|js\\|coffee\\)$" filename))
+         (not (string-match "\\(_\\|-\\)test\\.\\(rb\\|js\\|coffee\\)$" filename)))))
 
 (defvar ruby-test-not-found-message "No test among visible buffers or run earlier.")
 
