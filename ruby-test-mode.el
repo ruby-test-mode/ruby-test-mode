@@ -80,7 +80,8 @@ minor mode."
     ("\\(.*\\)\\(spec/routing/routes_spec.rb\\)$" "\\1config/routes.rb")
     ("\\(.*\\)\\(test/routing/routes_spec.rb\\)$" "\\1config/routes.rb")
 
-    ("\\(.*\\)\\(spec/\\)\\(controllers/\\|models/\\|views/\\|helpers/\\|mailers/\\|uploaders/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7") ("\\(.*\\)\\(test/\\)\\(controllers/\\|models/\\|views/\\|helpers/\\|mailers/\\|uploaders/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
+    ("\\(.*\\)\\(spec/\\)\\(controllers/\\|models/\\|views/\\|helpers/\\|mailers/\\|uploaders/\\)\\(.*\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
+    ("\\(.*\\)\\(test/\\)\\(controllers/\\|models/\\|views/\\|helpers/\\|mailers/\\|uploaders/\\)\\(.*\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1app/\\3\\4\\5\\7")
 
     ("\\(.*\\)\\(spec/\\)\\([^/]*\\)\\(_spec\\)\\(\\.rb\\)$" "\\1lib/\\3\\5")
     ("\\(.*\\)\\(test/\\)\\([^/]*\\)\\(_test\\)\\(\\.rb\\)$" "\\1lib/\\3\\5")
