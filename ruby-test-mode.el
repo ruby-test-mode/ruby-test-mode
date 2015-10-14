@@ -245,11 +245,12 @@ filename is a Ruby implementation file."
 (defun ruby-test-run ()
   "Run the current buffer's file as specification or unit test."
   (interactive)
+  (save-buffer)
   (let ((filename (ruby-test-find-file)))
     (if filename
         (progn
-          (if (fboundp 'magit-save-some-buffers)
-              (magit-save-some-buffers))
+          (if (fboundp 'magit-save-repository-buffers)
+              (magit-save-repository-buffers))
           (ruby-test-run-command (ruby-test-command filename)))
       (message ruby-test-not-found-message))))
 
