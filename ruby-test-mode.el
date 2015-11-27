@@ -286,7 +286,7 @@ depending on the filename."
       (setq command "bundle exec rspec"))
     (setq options ruby-test-rspec-options)
     (if line-number
-        (setq filename (format "%s:%s" filename line)))
+        (setq filename (format "%s:%s" filename line-number)))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
 
 (defun ruby-test-test-command (filename &optional line-number)
