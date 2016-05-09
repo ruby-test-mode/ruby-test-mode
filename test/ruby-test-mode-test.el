@@ -13,7 +13,7 @@
   )
 
 (ert-deftest ruby-test-find-target-filename ()
-  (let ((mapping '(("\\(.*\\)\\(.rb\\)" "\\1_test.rb" "other/\\1_test.rb"))))
+  (let ((mapping '(("\\(.*\\)\\(.rb\\)" "\\1_test.rb" "other/\\1_test.rb" "third/\\1_test.rb"))))
     (should (equal "exists_test.rb" (ruby-test-find-target-filename "exists.rb" mapping)))
     (flet ((file-exists-p (filename)
                           (if (string-match "other" filename)

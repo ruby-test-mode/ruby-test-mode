@@ -188,9 +188,10 @@ second element."
                   exist-filename)
               (setq target-filename
                     (or (dolist (filename target-filename-candidates exist-filename)
-                          (setq exist-filename (if (file-exists-p filename)
+                          (unless exist-filename
+                            (setq exist-filename (if (file-exists-p filename)
                                                    filename
-                                                 nil)))
+                                                 nil))))
 			(car target-filename-candidates)))))
         (setq mapping (cdr mapping))))
     target-filename))
