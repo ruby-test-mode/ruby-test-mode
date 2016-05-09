@@ -1,0 +1,15 @@
+* ruby-test-mode.el
+
+  [[https://travis-ci.org/r0man/ruby-test-mode][https://travis-ci.org/r0man/ruby-test-mode.svg]]
+  [[https://melpa.org/#/ruby-test-mode][https://melpa.org/packages/ruby-test-mode-badge.svg]]
+
+  Emacs minor mode for Behaviour and Test Driven Development in Ruby.
+
+** License
+
+   Copyright © 2009-2016 [[https://github.com/febeling][Florian Ebeling]], [[https://github.com/r0man][r0man]]
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation; either version 3, or (at
+   your option) any later version.
