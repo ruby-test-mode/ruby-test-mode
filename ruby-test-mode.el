@@ -274,7 +274,8 @@ second element."
     (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
                                     "\\([\"']\\(.*?\\)[\"']\\|" ruby-symbol-re "*\\)"
                                     "[ \t]*") nil t)
-        (let ((name (match-string 3))
+        (let ((name (or (match-string 3)
+                        (match-string 2)))
               (method (match-string 1)))
           (ruby-test-testcase-name name method)))))
 
@@ -287,6 +288,8 @@ second element."
     name)
    ((string= name "setup")
     nil)
+   ((string= method "def")
+    name)
    ((string-match "^[\"']\\(.*\\)[\"']$" name)
     (replace-regexp-in-string
      "\\?" "\\\\\\\\?"
