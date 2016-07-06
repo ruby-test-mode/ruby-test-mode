@@ -10,8 +10,7 @@
   (should (equal "project/test/file_test.rb"
                  (ruby-test-unit-filename "project/lib/file.rb")))
   (should (equal "project/path/file_test.rb"
-                 (ruby-test-unit-filename "project/path/file.rb")))
-  )
+                 (ruby-test-unit-filename "project/path/file.rb"))))
 
 (ert-deftest ruby-test-find-target-filename ()
   (let ((mapping '(("\\(.*\\)\\(.rb\\)" "\\1_test.rb" "other/\\1_test.rb"
@@ -35,7 +34,8 @@
                  (ruby-test-testcase-name "\"test with parenthesis (somewhere)\"" "def")))
   (should (equal "test with spaces from minitest"
                  (ruby-test-testcase-name "test with spaces from minitest" "it")))
-  )
+  (should (equal "test_method_with_def"
+                 (ruby-test-testcase-name "test_method_with_def" "def"))))
 
 (ert-deftest ruby-test-specification-filename ()
   (should (equal "project/spec/models/file_spec.rb"
@@ -55,5 +55,13 @@
   (should (equal "project/something/file_spec.rb"
                  (ruby-test-specification-filename "project/something/file.rb")))
   (should (equal "project/spec/javascripts/file_spec.coffee"
-                 (ruby-test-specification-filename "project/app/assets/javascripts/file.coffee")))
-  )
+                 (ruby-test-specification-filename "project/app/assets/javascripts/file.coffee"))))
+
+(ert-deftest ruby-test-testcase-name-test ()
+  (find-file "test/unit_test.rb")
+  (should (equal "test_one"
+                 (ruby-test-find-testcase-at "unit_test.rb" 4)))
+  (should (equal "test_one"
+                 (ruby-test-find-testcase-at "unit_test.rb" 5)))
+  (should (equal "test_one"
+                 (ruby-test-find-testcase-at "unit_test.rb" 6))))
