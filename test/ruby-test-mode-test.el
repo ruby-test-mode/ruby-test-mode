@@ -1,6 +1,8 @@
 (eval-when-compile (require 'cl))
 (require 'ert)
+(require 'el-mock)
 (require 'ruby-test-mode)
+
 
 (ert-deftest ruby-test-unit-filename ()
   (should (equal "project/test/controllers/path/controller_test.rb"
@@ -75,3 +77,62 @@
       (should (equal "test_one"
                      (ruby-test-find-testcase-at "unit_test.rb" target-line)))
       (should (equal target-line (line-number-at-pos))))))
+
+
+(ert-deftest ruby-test-run-test ()
+  (find-file "test/unit_test.rb")
+  (with-current-buffer "unit_test.rb"
+    (let* ((test-name (ruby-test-find-file))
+           (test-command (apply #'concat (list "bundle exec ruby -I'lib:test' "
+                                               test-name))))
+      (with-mock
+       (mock (ruby-test-run-command test-command))
+       (ruby-test-run)))))
+
+
+(ert-deftest ruby-test-run-testcase ()
+  (find-file "test/unit_test.rb")
+  (with-current-buffer "unit_test.rb"
+    (let* ((test-name (ruby-test-find-file))
+           (test-command (apply #'concat (list "bundle exec ruby -I'lib:test' "
+                                               test-name))))
+      (with-mock
+       (mock (ruby-test-run-command test-command))
+       (ruby-test-run)))))
+
+(ert-deftest ruby-test-run-test-with-gems ()
+  (find-file "test/unit_test.rb")
+  (with-current-buffer "unit_test.rb"
+    (let* ((test-name (ruby-test-find-file))
+           (test-command (apply #'concat (list "bundle exec ruby -rubygems -I'lib:test' "
+                                               test-name))))
+      (with-mock
+       (mock (ruby-test-run-command test-command))
+       (mock (ruby-test-gem-root-p *) => t)
+       (ruby-test-run)))))
+
+
+(ert-deftest ruby-test-run-at-point-test ()
+  (find-file "test/unit_test.rb")
+  (with-current-buffer "unit_test.rb"
+    (goto-line 5)
+    (let* ((test-name (ruby-test-find-file))
+           (test-command (apply #'concat (list "bundle exec ruby -I'lib:test' "
+                                               test-name
+                                               " --name \"/test_one/\""))))
+      (with-mock
+       (mock (ruby-test-run-command test-command))
+       (ruby-test-run-at-point)))))
+
+(ert-deftest ruby-test-run-at-point-test-with-rubygems ()
+  (find-file "test/unit_test.rb")
+  (with-current-buffer "unit_test.rb"
+    (goto-line 5)
+    (let* ((test-name (ruby-test-find-file))
+           (test-command (apply #'concat (list "bundle exec ruby -rubygems -I'lib:test' "
+                                               test-name
+                                               " --name \"/test_one/\""))))
+      (with-mock
+       (mock (ruby-test-run-command test-command))
+       (mock (ruby-test-gem-root-p *) => t)
+       (ruby-test-run-at-point)))))

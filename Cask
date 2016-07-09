@@ -4,4 +4,5 @@
 (depends-on "pcre2el" "1.8")
 
 (development
- (depends-on "ert-runner" "0.7.0"))
+ (depends-on "ert-runner" "0.7.0")
+ (depends-on "el-mock" "1.25.1"))
