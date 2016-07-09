@@ -267,17 +267,18 @@ second element."
 
 (defun ruby-test-find-testcase-at (file line)
   (with-current-buffer (get-file-buffer file)
-    (goto-char (point-min))
-    (forward-line (1- line))
-    (end-of-line)
-    (message "%s:%s" (current-buffer) (point))
-    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
-                                    "\\([\"']\\(.*?\\)[\"']\\|" ruby-symbol-re "*\\)"
-                                    "[ \t]*") nil t)
-        (let ((name (or (match-string 3)
-                        (match-string 2)))
-              (method (match-string 1)))
-          (ruby-test-testcase-name name method)))))
+    (save-excursion
+      (goto-char (point-min))
+      (forward-line (1- line))
+      (end-of-line)
+      (message "%s:%s" (current-buffer) (point))
+      (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
+                                      "\\([\"']\\(.*?\\)[\"']\\|" ruby-symbol-re "*\\)"
+                                      "[ \t]*") nil t)
+          (let ((name (or (match-string 3)
+                          (match-string 2)))
+                (method (match-string 1)))
+            (ruby-test-testcase-name name method))))))
 
 (defun ruby-test-testcase-name (name method)
   "Returns the sanitized name of the test"
@@ -364,20 +365,14 @@ depending on the filename."
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
 
 (defun ruby-test-test-command (filename &optional line-number)
-  (let (command options name-options)
-    (if (file-exists-p ".zeus.sock")
-        (setq command "zeus test")
-      (setq command "bundle exec ruby"))
-    (if (ruby-test-gem-root filename)
-        (setq options (cons "-rubygems" options)))
-    (setq options (cons "-I'lib:test'" options))
+  (let ((command (if (file-exists-p ".zeus.sock") "zeus test" "bundle exec ruby"))
+        (options (if (ruby-test-gem-root filename) (list "-rubygems -I'lib:test'") (list "-I'lib:test'"))))
     (if line-number
         (let ((test-case (ruby-test-find-testcase-at filename line-number)))
           (if test-case
-              (setq name-options (format "--name \"/%s/\"" test-case))
-            (error "No test case at %s:%s" filename line-number)))
-      (setq name-options ""))
-    (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
+              (format "%s %s %s %s" command (mapconcat 'identity options " ") filename (format "--name \"/%s/\"" test-case))
+              (error "No test case at %s:%s" filename line-number)))
+      (format "%s %s %s" command (mapconcat 'identity options " ") filename))))
 
 (defun ruby-test-project-root (filename root-predicate)
   "Returns the project root directory for a FILENAME using the
