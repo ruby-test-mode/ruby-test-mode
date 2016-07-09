@@ -369,7 +369,7 @@ depending on the filename."
     (if line-number
         (let ((test-case (ruby-test-find-testcase-at filename line-number)))
           (if test-case
-              (format "%s %s %s %s" command (mapconcat 'identity options " ") filename (format "--name \"/%s/\"" test-case))
+              (format "%s %s %s --name \"/%s/\"" command (mapconcat 'identity options " ") filename test-case)
               (error "No test case at %s:%s" filename line-number)))
       (format "%s %s %s" command (mapconcat 'identity options " ") filename))))
 
