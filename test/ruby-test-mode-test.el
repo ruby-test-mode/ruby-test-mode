@@ -65,3 +65,13 @@
                  (ruby-test-find-testcase-at "unit_test.rb" 5)))
   (should (equal "test_one"
                  (ruby-test-find-testcase-at "unit_test.rb" 6))))
+
+
+(ert-deftest ruby-test-testcase-name-saves-position ()
+  (find-file "test/unit_test.rb")
+  (with-current-buffer "unit_test.rb"
+    (let ((target-line 5))
+      (goto-line target-line)
+      (should (equal "test_one"
+                     (ruby-test-find-testcase-at "unit_test.rb" target-line)))
+      (should (equal target-line (line-number-at-pos))))))
