@@ -267,17 +267,18 @@ second element."
 
 (defun ruby-test-find-testcase-at (file line)
   (with-current-buffer (get-file-buffer file)
-    (goto-char (point-min))
-    (forward-line (1- line))
-    (end-of-line)
-    (message "%s:%s" (current-buffer) (point))
-    (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
-                                    "\\([\"']\\(.*?\\)[\"']\\|" ruby-symbol-re "*\\)"
-                                    "[ \t]*") nil t)
-        (let ((name (or (match-string 3)
-                        (match-string 2)))
-              (method (match-string 1)))
-          (ruby-test-testcase-name name method)))))
+    (save-excursion
+      (goto-char (point-min))
+      (forward-line (1- line))
+      (end-of-line)
+      (message "%s:%s" (current-buffer) (point))
+      (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
+                                      "\\([\"']\\(.*?\\)[\"']\\|" ruby-symbol-re "*\\)"
+                                      "[ \t]*") nil t)
+          (let ((name (or (match-string 3)
+                          (match-string 2)))
+                (method (match-string 1)))
+            (ruby-test-testcase-name name method))))))
 
 (defun ruby-test-testcase-name (name method)
   "Returns the sanitized name of the test"
