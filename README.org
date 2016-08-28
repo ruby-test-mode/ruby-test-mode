@@ -5,6 +5,16 @@
 
   Emacs minor mode for Behaviour and Test Driven Development in Ruby.
 
+** Keybindings
+
+   ruby-test-mode comes with some default keybindings:
+
+   | Binding   | Action                                                             |
+   |-----------+--------------------------------------------------------------------|
+   | ~C-c C-,​~ | Run the current buffer's file as an unit test or an rspec example. |
+   | ~C-c M-,​~ | Runs the unit test or rspec example at the current buffer's point. |
+   | ~C-c C-s~ | Toggle between implementation and test/example files.              |
+
 ** License
 
    Copyright © 2009-2016 [[https://github.com/febeling][Florian Ebeling]], [[https://github.com/r0man][r0man]]
