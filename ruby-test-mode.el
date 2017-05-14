@@ -132,7 +132,7 @@ second the replace expression."
      "\\1/test/views/\\2_test.rb")
 
     ;; everything in app, should exist same path in spec/test.
-    (,(pcre-to-elisp "(.*)/app/(.*)\\.rb$")
+    (,(pcre-to-elisp "(.*?)/app/(.*)\\.rb$")
      "\\1/spec/\\2_spec.rb"
      "\\1/test/\\2_test.rb")
 
