@@ -324,9 +324,13 @@ filename is a Ruby implementation file."
 (defun ruby-test-run ()
   "Run the current buffer's file as specification or unit test."
   (interactive)
+  (save-buffer)
   (let ((filename (ruby-test-find-file)))
     (if filename
-        (ruby-test-run-command (ruby-test-command filename))
+        (progn
+          (if (fboundp 'magit-save-repository-buffers)
+              (magit-save-repository-buffers))
+          (ruby-test-run-command (ruby-test-command filename)))
       (message ruby-test-not-found-message))))
 
 ;;;###autoload
@@ -338,9 +342,12 @@ as `ruby-test-run-file'"
     (let ((test-file-buffer (get-file-buffer filename)))
       (if (and filename
                test-file-buffer)
+        (progn
+          (if (fboundp 'magit-save-some-buffers)
+              (magit-save-some-buffers))
           (with-current-buffer test-file-buffer
             (let ((line (line-number-at-pos (point))))
-              (ruby-test-run-command (ruby-test-command filename line))))
+              (ruby-test-run-command (ruby-test-command filename line)))))
         (message ruby-test-not-found-message)))))
 
 (defun ruby-test-run-command (command)
