@@ -289,6 +289,8 @@ second element."
    ;; so no need to sanitize them
    ((string= method "it")
     name)
+   ((string= method "should") ;; shoulda
+    name)
    ((string= name "setup")
     nil)
    ((string-match "^[\"']\\(.*\\)[\"']$" name)
