@@ -14,14 +14,16 @@
 
 ;; This software can be redistributed. GPL v2 applies.
 
-;; This mode provides commands for running ruby tests. The output is
+;;; Commentary:
+
+;; This mode provides commands for running ruby tests.  The output is
 ;; shown in separate buffer '*Ruby-Test*' in ruby-test
-;; mode. Backtraces from failures and errors are marked, and can be
+;; mode.  Backtraces from failures and errors are marked, and can be
 ;; clicked to bring up the relevent source file, where point is moved
 ;; to the named line.
 ;;
 ;; The tests can be both, either rspec behaviours, or unit
-;; tests. (File names are assumed to end in _spec.rb or _test.rb to
+;; tests.  (File names are assumed to end in _spec.rb or _test.rb to
 ;; tell the type.)  When the command for running a test is invoked, it
 ;; looks at several places for an actual test to run: first, it looks
 ;; if the current buffer is a test (or spec), secondly, if not, it
@@ -42,8 +44,11 @@
 ;;
 ;; C-c C-s      - Toggle between implementation and test/example files.
 
+
 (require 'ruby-mode)
 (require 'pcre2el)
+
+;;; Code:
 
 (defgroup ruby-test nil
   "Minor mode providing commands and helpers for Behavioural and
@@ -59,7 +64,7 @@ Test Driven Development in Ruby."
 
 (defvar ruby-test-default-library
   "test"
-  "Define the default test library")
+  "Define the default test library.")
 
 (defvar ruby-test-mode-map
   (let ((map (make-sparse-keymap)))
@@ -69,12 +74,11 @@ Test Driven Development in Ruby."
     (define-key map (kbd "C-c C-t C-t") 'ruby-test-run-at-point)
     (define-key map (kbd "C-c C-s")     'ruby-test-toggle-implementation-and-specification)
     map)
-  "The keymap used in `ruby-test-mode' buffers.")
+  "The keymap used in command `ruby-test-mode' buffers.")
 
 (defcustom ruby-test-file-name-extensions
   '("builder" "erb" "haml" "rb" "rjs" "rake" "slim")
-  "*A list of filename extensions that trigger the loading of the
-minor mode."
+  "List of filename extensions that trigger the loading of the minor mode."
   :type '(list)
   :group 'ruby-test)
 
@@ -116,8 +120,8 @@ minor mode."
     ;; in same folder,  gem/aaa_spec.rb => gem/aaa.rb
     (,(pcre-to-elisp "(.*)_(spec|test)\\.rb$") "\\1.rb")
     )
-  "Regular expressions to map Ruby implementation to unit
-filenames). The first element in each list is the match, the
+  "Regular expressions to map Ruby implementation to unit filenames).
+The first element in each list is the match, the
 second the replace expression."
   :type '(list)
   :group 'ruby-test)
@@ -155,8 +159,8 @@ second the replace expression."
     ;; in same folder,  gem/aaa.rb => gem/aaa_spec.rb
     (,(pcre-to-elisp "(.*)\\.rb$") "\\1_spec.rb" "\\1_test.rb")
     )
-  "Regular expressions to map Ruby specification to
-implementation filenames). The first element in each list is the
+  "Regular expressions to map Ruby specification to implementation filenames).
+The first element in each list is the
 match, the second the replace expression."
   :type '(list)
   :group 'ruby-test)
@@ -183,8 +187,8 @@ match, the second the replace expression."
      "\\1/test/lib/\\2_test.rb")
     (,(pcre-to-elisp "(.*)\\.rb$") "\\1_test.rb")
     )
-  "Regular expressions to map Ruby unit to implementation
-filenames. The first element in each list is the match, the
+  "Regular expressions to map Ruby unit to implementation filenames.
+The first element in each list is the match, the
 second the replace expression."
   :type '(list)
   :group 'ruby-test)
@@ -201,8 +205,7 @@ mode."
   :group 'ruby-test)
 
 (defun select (fn ls)
-  "Create a list from elements of list LS for which FN returns
-non-nil."
+  "Create a list from elements of list LS for which FN is non-nil."
   (let ((result nil))
     (dolist (item ls)
       (if (funcall fn item)
@@ -212,18 +215,21 @@ non-nil."
 (defalias 'find-all 'select)
 
 (defun ruby-test-spec-p (filename)
+  "Return non-nil if FILENAME is a spec."
   (and (stringp filename) (string-match "spec\.rb$" filename)))
 
 (defun ruby-test-p (filename)
+  "Return non-nil if FILENAME is a test."
   (and (stringp filename) (string-match "test\.rb$" filename)))
 
 (defun ruby-test-any-p (filename)
+  "Return non-nil if FILENAME is a test or spec."
   (or (ruby-test-spec-p filename)
       (ruby-test-p filename)))
 
 (defun ruby-test-file-name-extension-p (&optional filename)
-  "Returns t if the minor mode should be enabled for the current
-buffer's filename or the optional filename argument."
+  "Return t if the minor mode should be enabled.
+If FILENAME is nil, use the current buffer."
   (member
    (file-name-extension (or filename buffer-file-name))
    ruby-test-file-name-extensions))
@@ -244,9 +250,9 @@ test; or the last run test (if there was one)."
     (setq ruby-test-last-run (car (select 'ruby-test-any-p (select 'identity files))))))
 
 (defun ruby-test-find-target-filename (filename mapping)
-  "Find the target filename by matching FILENAME with the first
-element of each list in mapping, and replacing the match with the
-second element."
+  "Find the target filename.
+Match FILENAME with the first element of each list in MAPPING,
+and replace the match with the second element."
   (let ((target-filename nil))
     (while (and (not target-filename) mapping)
       (let ((regexp-match (car (car mapping)))
@@ -268,6 +274,7 @@ second element."
     target-filename))
 
 (defun ruby-test-find-testcase-at (file line)
+  "Find testcase at FILE LINE."
   (with-current-buffer (get-file-buffer file)
     (save-excursion
       (goto-char (point-min))
@@ -283,7 +290,7 @@ second element."
             (ruby-test-testcase-name name method))))))
 
 (defun ruby-test-testcase-name (name method)
-  "Returns the sanitized name of the test"
+  "Return the sanitized name of the test using NAME and METHOD."
   (cond
    ;; assume methods created with it are from minitest
    ;; so no need to sanitize them
@@ -303,14 +310,12 @@ second element."
     name)))
 
 (defun ruby-test-implementation-filename (&optional filename)
-  "Returns the implementation filename for the current buffer's
-filename or the optional FILENAME, else nil."
+  "Return the implementation filename for the current buffer's filename or the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-implementation-filename-mapping)))
 
 (defun ruby-test-implementation-p (&optional filename)
-  "Returns t if the current buffer's filename or the given
-filename is a Ruby implementation file."
+  "Return t if the current buffer's filename or the given FILENAME is a Ruby implementation file."
   (let ((filename (or filename buffer-file-name)))
     (and (file-readable-p filename)
          (string-match (regexp-opt ruby-test-file-name-extensions)
@@ -331,8 +336,7 @@ filename is a Ruby implementation file."
 
 ;;;###autoload
 (defun ruby-test-run-at-point ()
-  "Run test at point individually, using the same search strategy
-as `ruby-test-run-file'"
+  "Run test at point individually, using the same search strategy as `ruby-test-run-file'."
   (interactive)
   (let ((filename (ruby-test-find-file)))
     (let ((test-file-buffer (get-file-buffer filename)))
@@ -344,14 +348,14 @@ as `ruby-test-run-file'"
         (message ruby-test-not-found-message)))))
 
 (defun ruby-test-run-command (command)
+  "Run compilation COMMAND in rails or ruby root directory."
   (setq default-directory (or (ruby-test-rails-root filename)
                               (ruby-test-ruby-root filename)
                               default-directory))
   (compilation-start command t))
 
 (defun ruby-test-command (filename &optional line-number)
-  "Return the command to run a unit test or a specification
-depending on the filename."
+  "Return the command to run a unit test or a specification depending on the FILENAME and LINE-NUMBER."
   (cond ((ruby-test-spec-p filename)
          (ruby-test-spec-command filename line-number))
         ((ruby-test-p filename)
@@ -359,6 +363,7 @@ depending on the filename."
         (t (message "File is not a known ruby test file"))))
 
 (defun ruby-test-spec-command (filename &optional line-number)
+  "Return command to run spec in FILENAME at LINE-NUMBER."
   (let (command options)
     (if (file-exists-p ".zeus.sock")
         (setq command "zeus rspec")
@@ -369,6 +374,7 @@ depending on the filename."
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
 
 (defun ruby-test-test-command (filename &optional line-number)
+  "Return command to run test in FILENAME at LINE-NUMBER."
   (let (command options name-options)
     (if (file-exists-p ".zeus.sock")
         (setq command "zeus test")
@@ -385,10 +391,10 @@ depending on the filename."
     (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
 
 (defun ruby-test-project-root (filename root-predicate)
-  "Returns the project root directory for a FILENAME using the
-given ROOT-PREDICATE, else nil. The function returns a directory
-if any of the directories in FILENAME is tested to t by
-evaluating the ROOT-PREDICATE."
+  "Return the project root directory.
+Consider a FILENAME using the given ROOT-PREDICATE, else nil.  The
+function returns a directory if any of the directories in
+FILENAME is tested to t by evaluating the ROOT-PREDICATE."
   (if (funcall root-predicate filename)
       filename
     (and
@@ -400,8 +406,7 @@ evaluating the ROOT-PREDICATE."
       root-predicate))))
 
 (defun ruby-test-project-root-p (directory candidates)
-  "Returns t if one of the filenames in CANDIDATES is existing
-relative to the given DIRECTORY, else nil."
+  "Return t if one of the filenames in CANDIDATES is existing relative to the given DIRECTORY."
   (let ((found nil))
     (while (and (not found) (car candidates))
       (setq found
@@ -411,51 +416,43 @@ relative to the given DIRECTORY, else nil."
     found))
 
 (defun ruby-test-rails-root (filename)
-  "Returns the Ruby on Rails project directory for the given
-FILENAME, else nil."
+  "Return the Ruby on Rails project directory for the given FILENAME."
   (ruby-test-project-root filename 'ruby-test-rails-root-p))
 
 (defun ruby-test-rails-root-p (directory)
-  "Returns t if the given DIRECTORY is the root of a Ruby on
-Rails project, else nil."
+  "Return t if the given DIRECTORY is the root of a Ruby on Rails project, else nil."
   (and (ruby-test-ruby-root-p directory)
        (ruby-test-project-root-p directory
                                  '("config/environment.rb" "config/database.yml"))))
 
 (defun ruby-test-gem-root (filename)
-  "Returns the gem project directory for the given
-FILENAME, else nil."
+  "Return the gem project directory for the given FILENAME, else nil."
   (ruby-test-project-root filename 'ruby-test-gem-root-p))
 
 (defun ruby-test-gem-root-p (directory)
-  "Returns t if the given DIRECTORY is the root of a Ruby on
-gem, else nil."
+  "Return t if the given DIRECTORY is the root of a Ruby on gem, else nil."
   (and (ruby-test-ruby-root-p directory)
        (> (length (directory-files directory nil ".gemspec")) 0)))
 
 (defun ruby-test-ruby-root (filename)
-  "Returns the Ruby project directory for the given FILENAME,
-else nil."
+  "Return the Ruby project directory for the given FILENAME,else nil."
   (ruby-test-project-root filename 'ruby-test-ruby-root-p))
 
 (defun ruby-test-ruby-root-p (directory)
-  "Returns t if the given DIRECTORY is the root of a Ruby
-project, else nil."
+  "Return t if the given DIRECTORY is the root of a Ruby project, else nil."
   (or (ruby-test-project-root-p directory '("Rakefile"))
       (ruby-test-project-root-p directory '("Rakefile.rb"))
       (ruby-test-project-root-p directory '("spec"))
       (ruby-test-project-root-p directory '("test"))))
 
 (defun ruby-test-specification-filename (&optional filename)
-  "Returns the specification filename for the current buffer's
-filename or the optional FILENAME, else nil."
+  "Return the specification filename for the current buffer's filename or the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-specification-filename-mapping)))
 
 ;;;###autoload
 (defun ruby-test-toggle-implementation-and-specification (&optional filename)
-  "Toggle between the implementation and specification/test file
-for the current buffer or the optional FILENAME."
+  "Toggle between the implementation and specification/test file for the current buffer or the optional FILENAME."
   (interactive)
   (let ((filename (or filename (buffer-file-name))))
     (cond ((ruby-test-implementation-p filename)
@@ -475,13 +472,12 @@ for the current buffer or the optional FILENAME."
            (message "Sorry, %s is neither a Ruby implementation nor a test file." filename)))))
 
 (defun ruby-test-unit-filename (&optional filename)
-  "Returns the unit filename for the current buffer's filename or
-the optional FILENAME, else nil."
+  "Return the unit filename for the current buffer's filename or the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-unit-filename-mapping)))
 
 (defun ruby-test-default-test-filename (filename)
-  "Returns the default test filename"
+  "Return the default test filename for FILENAME."
   (cond ((and (string-equal ruby-test-default-library "test")
               (ruby-test-unit-filename filename))
          (ruby-test-unit-filename filename))
@@ -491,7 +487,7 @@ the optional FILENAME, else nil."
         (t nil)))
 
 (defun ruby-test-enable ()
-  "Enable the ruby-test-mode."
+  "Enable the ruby test mode."
   (ruby-test-mode t))
 
 (add-hook 'ruby-mode-hook 'ruby-test-enable)
