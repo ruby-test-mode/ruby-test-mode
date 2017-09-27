@@ -331,27 +331,33 @@ and replace the match with the second element."
   (interactive)
   (let ((filename (ruby-test-find-file)))
     (if filename
-        (ruby-test-run-command (ruby-test-command filename))
+        (ruby-test-with-ruby-directory
+         (ruby-test-run-command (ruby-test-command filename)))
       (message ruby-test-not-found-message))))
 
 ;;;###autoload
 (defun ruby-test-run-at-point ()
   "Run test at point individually, using the same search strategy as `ruby-test-run-file'."
   (interactive)
-  (let ((filename (ruby-test-find-file)))
-    (let ((test-file-buffer (get-file-buffer filename)))
-      (if (and filename
-               test-file-buffer)
-          (with-current-buffer test-file-buffer
-            (let ((line (line-number-at-pos (point))))
-              (ruby-test-run-command (ruby-test-command filename line))))
-        (message ruby-test-not-found-message)))))
+  (let* ((filename (ruby-test-find-file))
+         (test-file-buffer (get-file-buffer filename)))
+    (if (and filename
+             test-file-buffer)
+        (ruby-test-with-ruby-directory
+         (with-current-buffer test-file-buffer
+           (let ((line (line-number-at-pos (point))))
+             (ruby-test-run-command (ruby-test-command filename line)))))
+      (message ruby-test-not-found-message))))
+
+(defmacro ruby-test-with-ruby-directory (form)
+  "Run the provided FORM with default-directory set to ruby or rails root."
+  `(let ((default-directory (or (ruby-test-rails-root filename)
+                                (ruby-test-ruby-root filename)
+                                default-directory)))
+     ,form))
 
 (defun ruby-test-run-command (command)
   "Run compilation COMMAND in rails or ruby root directory."
-  (setq default-directory (or (ruby-test-rails-root filename)
-                              (ruby-test-ruby-root filename)
-                              default-directory))
   (compilation-start command t))
 
 (defun ruby-test-command (filename &optional line-number)
