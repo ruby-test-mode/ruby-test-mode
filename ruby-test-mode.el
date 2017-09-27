@@ -366,6 +366,7 @@ and replace the match with the second element."
   "Return command to run spec in FILENAME at LINE-NUMBER."
   (let ((command
          (cond ((file-exists-p ".zeus.sock") "zeus rspec")
+               ((file-exists-p "bin/rspec") "bin/rspec")
                (t "bundle exec rspec")))
         (options ruby-test-rspec-options)
         (filename (if line-number
