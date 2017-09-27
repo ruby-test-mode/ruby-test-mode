@@ -364,13 +364,13 @@ and replace the match with the second element."
 
 (defun ruby-test-spec-command (filename &optional line-number)
   "Return command to run spec in FILENAME at LINE-NUMBER."
-  (let (command options)
-    (if (file-exists-p ".zeus.sock")
-        (setq command "zeus rspec")
-      (setq command "bundle exec rspec"))
-    (setq options ruby-test-rspec-options)
-    (if line-number
-        (setq filename (format "%s:%s" filename line-number)))
+  (let ((command
+         (cond ((file-exists-p ".zeus.sock") "zeus rspec")
+               (t "bundle exec rspec")))
+        (options ruby-test-rspec-options)
+        (filename (if line-number
+                      (format "%s:%s" filename line-number)
+                    filename)))
     (format "%s %s %s" command (mapconcat 'identity options " ") filename)))
 
 (defun ruby-test-test-command (filename &optional line-number)
