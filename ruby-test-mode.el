@@ -12,7 +12,7 @@
 ;; Keywords: ruby unit test rspec
 ;; Package-Requires: ((ruby-mode "1.0") (pcre2el "1.8"))
 
-;; This software can be redistributed. GPL v2 applies.
+;; This software can be redistributed. GPL v3 applies.
 
 ;;; Commentary:
 
