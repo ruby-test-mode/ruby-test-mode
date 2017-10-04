@@ -217,6 +217,13 @@ mode."
   :keymap 'ruby-test-mode-map
   :group 'ruby-test)
 
+(defmacro ruby-test-with-ruby-directory (filename form)
+  "Run the provided FORM with default-directory set to ruby or rails root."
+  `(let ((default-directory (or (ruby-test-rails-root ,filename)
+                                (ruby-test-ruby-root ,filename)
+                                default-directory)))
+     ,form))
+
 (defun select (fn ls)
   "Create a list from elements of list LS for which FN is non-nil."
   (let ((result nil))
@@ -344,7 +351,7 @@ and replace the match with the second element."
   (interactive)
   (let ((filename (ruby-test-find-file)))
     (if filename
-        (ruby-test-with-ruby-directory
+        (ruby-test-with-ruby-directory filename
          (ruby-test-run-command (ruby-test-command filename)))
       (message ruby-test-not-found-message))))
 
@@ -356,18 +363,11 @@ and replace the match with the second element."
          (test-file-buffer (get-file-buffer filename)))
     (if (and filename
              test-file-buffer)
-        (ruby-test-with-ruby-directory
+        (ruby-test-with-ruby-directory filename
          (with-current-buffer test-file-buffer
            (let ((line (line-number-at-pos (point))))
              (ruby-test-run-command (ruby-test-command filename line)))))
       (message ruby-test-not-found-message))))
-
-(defmacro ruby-test-with-ruby-directory (form)
-  "Run the provided FORM with default-directory set to ruby or rails root."
-  `(let ((default-directory (or (ruby-test-rails-root filename)
-                                (ruby-test-ruby-root filename)
-                                default-directory)))
-     ,form))
 
 (defun ruby-test-run-command (command)
   "Run compilation COMMAND in rails or ruby root directory."
