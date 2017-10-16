@@ -302,7 +302,7 @@ and replace the match with the second element."
       (end-of-line)
       (message "%s:%s" (current-buffer) (point))
       (if (re-search-backward (concat "^[ \t]*\\(def\\|test\\|it\\|should\\)[ \t]+"
-                                      "\\([\"']\\(.*?\\)[\"']\\|" ruby-symbol-re "*\\)"
+                                      "\\(\\([\"'].*?[\"']\\)\\|" ruby-symbol-re "*\\)"
                                       "[ \t]*") nil t)
           (let ((name (or (match-string 3)
                           (match-string 2)))
