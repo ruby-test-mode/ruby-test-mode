@@ -9,7 +9,7 @@
 ;; Maintainer: Roman Scherer <roman.scherer@burningswell.com>
 ;; Created: 09.02.08
 ;; Version: 1.7
-;; Keywords: ruby unit test rspec
+;; Keywords: ruby unit test rspec tools
 ;; Package-Requires: ((ruby-mode "1.0") (pcre2el "1.8"))
 
 ;; This file is not part of GNU Emacs.
