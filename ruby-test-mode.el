@@ -79,6 +79,10 @@ Test Driven Development in Ruby."
   "test"
   "Define the default test library.")
 
+(defvar ruby-test-last-run
+  nil
+  "The last ruby test run.")
+
 (defvar ruby-test-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-t n")   'ruby-test-run)
@@ -353,7 +357,7 @@ and replace the match with the second element."
   (let ((filename (ruby-test-find-file)))
     (if filename
         (ruby-test-with-ruby-directory filename
-         (ruby-test-run-command (ruby-test-command filename)))
+                                       (ruby-test-run-command (ruby-test-command filename)))
       (message ruby-test-not-found-message))))
 
 ;;;###autoload
@@ -365,9 +369,9 @@ and replace the match with the second element."
     (if (and filename
              test-file-buffer)
         (ruby-test-with-ruby-directory filename
-         (with-current-buffer test-file-buffer
-           (let ((line (line-number-at-pos (point))))
-             (ruby-test-run-command (ruby-test-command filename line)))))
+                                       (with-current-buffer test-file-buffer
+                                         (let ((line (line-number-at-pos (point))))
+                                           (ruby-test-run-command (ruby-test-command filename line)))))
       (message ruby-test-not-found-message))))
 
 (defun ruby-test-run-command (command)
