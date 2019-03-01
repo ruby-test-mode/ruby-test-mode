@@ -218,7 +218,8 @@ mode."
   :group 'ruby-test)
 
 (defmacro ruby-test-with-ruby-directory (filename form)
-  "Run the provided FORM with default-directory set to ruby or rails root."
+  "Run the provided FORM with `default-directory` bound.
+Set to ruby or rails root inferred from FILENAME."
   `(let ((default-directory (or (ruby-test-rails-root ,filename)
                                 (ruby-test-ruby-root ,filename)
                                 default-directory)))
