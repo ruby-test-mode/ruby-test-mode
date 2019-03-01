@@ -229,7 +229,7 @@ Set to ruby or rails root inferred from FILENAME."
                                 default-directory)))
      ,form))
 
-(defun select (fn ls)
+(defun ruby-test-select (fn ls)
   "Create a list from elements of list LS for which FN is non-nil."
   (let ((result nil))
     (dolist (item ls)
@@ -237,7 +237,7 @@ Set to ruby or rails root inferred from FILENAME."
           (setq result (cons item result))))
     (reverse result)))
 
-(defalias 'find-all 'select)
+(defalias 'find-all 'ruby-test-select)
 
 (defun ruby-test-spec-p (filename)
   "Return non-nil if FILENAME is a spec."
@@ -272,7 +272,7 @@ test; or the last run test (if there was one)."
                   (window-list))))
     (if (boundp 'ruby-test-last-run)
         (nconc files (list ruby-test-last-run)))
-    (setq ruby-test-last-run (car (select 'ruby-test-any-p (select 'identity files))))))
+    (setq ruby-test-last-run (car (ruby-test-select 'ruby-test-any-p (ruby-test-select 'identity files))))))
 
 (defun ruby-test-find-target-filename (filename mapping)
   "Find the target filename.
