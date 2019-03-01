@@ -5,7 +5,7 @@
 
 ;; Author: Roman Scherer <roman.scherer@gmx.de>
 ;;         Caspar Florian Ebeling <florian.ebeling@gmail.com>
-;;
+;; URL: https://github.com/ruby-test-mode/ruby-test-mode
 ;; Maintainer: Roman Scherer <roman.scherer@burningswell.com>
 ;; Created: 09.02.08
 ;; Version: 1.7
