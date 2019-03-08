@@ -405,7 +405,7 @@ and replace the match with the second element."
         (setq command "zeus test")
       (setq command "bundle exec ruby"))
     (if (ruby-test-gem-root filename)
-        (setq options (cons "-rubygems" options)))
+        (setq options (cons "-rrubygems" options)))
     (setq options (cons "-I'lib:test'" options))
     (if line-number
         (let ((test-case (ruby-test-find-testcase-at filename line-number)))
