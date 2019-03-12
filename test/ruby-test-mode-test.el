@@ -1,7 +1,3 @@
-(eval-when-compile (require 'cl))
-(require 'ert)
-(require 'ruby-test-mode)
-
 (ert-deftest ruby-test-unit-filename ()
   (should (equal "project/test/controllers/path/controller_test.rb"
                  (ruby-test-unit-filename "project/app/controllers/path/controller.rb")))
