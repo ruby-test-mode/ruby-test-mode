@@ -1,6 +1,6 @@
 * ruby-test-mode.el
 
-  [[https://travis-ci.org/r0man/ruby-test-mode][https://travis-ci.org/ruby-test-mode/ruby-test-mode.svg]]
+  [[https://travis-ci.org/ruby-test-mode/ruby-test-mode][https://travis-ci.org/ruby-test-mode/ruby-test-mode.svg]]
   [[https://melpa.org/#/ruby-test-mode][https://melpa.org/packages/ruby-test-mode-badge.svg]]
 
   Emacs minor mode for Behaviour and Test Driven Development in Ruby.

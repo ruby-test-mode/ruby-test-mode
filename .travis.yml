@@ -1,8 +1,8 @@
 language: emacs-lisp
 env:
-  - EVM_EMACS=emacs-26.1-bin
-  - EVM_EMACS=emacs-25.3-bin
-  - EVM_EMACS=emacs-24.5-bin
+  - EVM_EMACS=emacs-26.1-travis
+  - EVM_EMACS=emacs-25.3-travis
+  - EVM_EMACS=emacs-24.5-travis
 install:
   - curl -fsSkL https://raw.github.com/rejeep/evm/master/go | bash
   - export PATH="$HOME/.evm/bin:$PATH"
