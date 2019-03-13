@@ -222,15 +222,14 @@ mode."
   :group 'ruby-test)
 
 (defmacro ruby-test-with-ruby-directory (filename form)
-  "Run the provided FORM with `default-directory` bound.
-Set to ruby or rails root inferred from FILENAME."
+  "Set to ruby or rails root inferred from FILENAME and run the provided FORM with `default-directory` bound."
   `(let ((default-directory (or (ruby-test-rails-root ,filename)
                                 (ruby-test-ruby-root ,filename)
                                 default-directory)))
      ,form))
 
 (defun ruby-test-select (fn ls)
-  "Create a list from elements of list LS for which FN is non-nil."
+  "Call FN and create a list from elements of list LS for which FN is non-nil."
   (let ((result nil))
     (dolist (item ls)
       (if (funcall fn item)
@@ -431,7 +430,7 @@ FILENAME is tested to t by evaluating the ROOT-PREDICATE."
       root-predicate))))
 
 (defun ruby-test-project-root-p (directory candidates)
-  "Return t if one of the filenames in CANDIDATES is existing relative to the given DIRECTORY."
+  "Return t if the given DIRECTORY has one of the filenames in CANDIDATES."
   (let ((found nil))
     (while (and (not found) (car candidates))
       (setq found
