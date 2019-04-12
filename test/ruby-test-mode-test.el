@@ -71,6 +71,21 @@
                      (ruby-test-find-testcase-at "unit_test.rb" target-line)))
       (should (equal target-line (line-number-at-pos))))))
 
+(ert-deftest ruby-test-command ()
+  (with-test-file "test/minitest_helper.rb"
+    (with-test-file ".gemspec"
+      (should (equal "bundle exec ruby -I'lib:test:spec' -rrubygems ./test/unit_test.rb "
+                (ruby-test-command "./test/unit_test.rb")))))
+  (with-test-file "spec/minitest_helper.rb"
+    (with-test-file ".gemspec"
+      (should (equal "bundle exec ruby -I'lib:test:spec' -rrubygems ./spec/unit_spec.rb "
+                (ruby-test-command "./spec/unit_spec.rb")))))
+  (with-test-file ".gemspec"
+    (should (equal "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb "
+              (ruby-test-command "./test/unit_test.rb"))))
+  (should (equal "bundle exec rspec -b ./spec/unit_spec.rb"
+            (ruby-test-spec-command "./spec/unit_spec.rb"))))
+
 (ert-deftest ruby-test-minitest-command ()
   (with-test-file ".gemspec"
     (should (equal "bundle exec ruby -I'lib:test:spec' -rrubygems ./test/unit_test.rb "

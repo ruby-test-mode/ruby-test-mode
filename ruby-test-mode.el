@@ -385,7 +385,9 @@ and replace the match with the second element."
 
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification depending on the FILENAME and LINE-NUMBER."
-  (cond ((ruby-test-spec-p filename)
+  (cond ((ruby-test-minitest-p filename)
+          (ruby-test-minitest-command filename line-number))
+        ((ruby-test-spec-p filename)
          (ruby-test-spec-command filename line-number))
         ((ruby-test-p filename)
          (ruby-test-test-command filename line-number))
