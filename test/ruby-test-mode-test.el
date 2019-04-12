@@ -62,7 +62,6 @@
   (should (equal "test_one"
                  (ruby-test-find-testcase-at "unit_test.rb" 6))))
 
-
 (ert-deftest ruby-test-testcase-name-saves-position ()
   (find-file "test/unit_test.rb")
   (with-current-buffer "unit_test.rb"
@@ -71,3 +70,60 @@
       (should (equal "test_one"
                      (ruby-test-find-testcase-at "unit_test.rb" target-line)))
       (should (equal target-line (line-number-at-pos))))))
+
+(ert-deftest ruby-test-minitest-command ()
+  (with-test-file ".gemspec"
+    (should (equal "bundle exec ruby -I'lib:test:spec' -rrubygems ./test/unit_test.rb "
+              (ruby-test-minitest-command "./test/unit_test.rb")))))
+
+(ert-deftest ruby-test-spec-command ()
+  (with-test-file ".zeus.sock"
+    (should (equal "zeus rspec -b project/spec/hello_spec.rb"
+              (ruby-test-spec-command "project/spec/hello_spec.rb"))))
+  (with-test-file "bin/rspec"
+    (should (equal "bin/rspec -b project/spec/hello_spec.rb"
+              (ruby-test-spec-command "project/spec/hello_spec.rb"))))
+  (should (equal "bundle exec rspec -b project/spec/hello_spec.rb"
+            (ruby-test-spec-command "project/spec/hello_spec.rb")))
+  (should (equal "bundle exec rspec -b project/spec/hello_spec.rb:7"
+            (ruby-test-spec-command "project/spec/hello_spec.rb" 7))))
+
+(ert-deftest ruby-test-test-command ()
+  (with-test-file ".gemspec"
+    (should (equal "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb "
+              (ruby-test-test-command "./test/unit_test.rb")))))
+
+(ert-deftest ruby-test-rails-root-p ()
+  (with-test-file "config/environment.rb"
+    (should (ruby-test-rails-root-p "."))))
+
+(ert-deftest ruby-test-rails-root ()
+  (with-test-file "config/database.yml"
+    (should (equal "./" (ruby-test-rails-root "./test/unit_test.rb")))))
+
+(ert-deftest ruby-test-gem-root-p ()
+  (with-test-file ".gemspec"
+    (should (ruby-test-gem-root-p "."))))
+
+(ert-deftest ruby-test-gem-root ()
+  (with-test-file ".gemspec"
+    (should (equal "./" (ruby-test-gem-root "./test/unit_test.rb")))))
+
+(ert-deftest ruby-test-ruby-root-p ()
+  (should (ruby-test-ruby-root-p "./"))
+  (should-not (ruby-test-ruby-root-p "test")))
+
+(ert-deftest ruby-test-ruby-root ()
+  (should (equal "./" (ruby-test-ruby-root "./test/unit_test.rb"))))
+
+(ert-deftest ruby-test-minitest-p ()
+  (with-test-file "spec/minitest_helper.rb"
+    (should (ruby-test-minitest-p "spec/hello_spec.rb")))
+  (with-test-file "test/minitest_helper.rb"
+    (should (ruby-test-minitest-p "test/hello_test.rb"))))
+
+(ert-deftest ruby-test-spec-p ()
+  (should (ruby-test-spec-p "spec/hello_spec.rb")))
+
+(ert-deftest ruby-test-test-p ()
+  (should (ruby-test-p "test/hello_test.rb")))

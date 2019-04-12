@@ -238,6 +238,12 @@ mode."
 
 (defalias 'find-all 'ruby-test-select)
 
+(defun ruby-test-minitest-p (filename)
+  "Return non-nil if FILENAME is a minitest."
+  (and (stringp filename)
+    (or (and (string-match "test\.rb$" filename) (file-exists-p "test/minitest_helper.rb"))
+      (and (string-match "spec\.rb$" filename) (file-exists-p "spec/minitest_helper.rb")))))
+
 (defun ruby-test-spec-p (filename)
   "Return non-nil if FILENAME is a spec."
   (and (stringp filename) (string-match "spec\.rb$" filename)))
@@ -384,6 +390,23 @@ and replace the match with the second element."
         ((ruby-test-p filename)
          (ruby-test-test-command filename line-number))
         (t (message "File is not a known ruby test file"))))
+
+(defun ruby-test-minitest-command (filename &optional line-number)
+  "Return command to run minitest in FILENAME at LINE-NUMBER."
+  (let (command options name-options)
+    (if (file-exists-p ".zeus.sock")
+      (setq command "zeus test")
+      (setq command "bundle exec ruby"))
+    (if (ruby-test-gem-root filename)
+      (setq options (cons "-rrubygems" options)))
+    (setq options (cons "-I'lib:test:spec'" options))
+    (if line-number
+      (let ((test-case (ruby-test-find-testcase-at filename line-number)))
+        (if test-case
+          (setq name-options (format "-n \"/%s/\"" test-case))
+          (error "No test case at %s:%s" filename line-number)))
+      (setq name-options ""))
+    (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
 
 (defun ruby-test-spec-command (filename &optional line-number)
   "Return command to run spec in FILENAME at LINE-NUMBER."
