@@ -1,0 +1,5 @@
+* TODOs
+  - integration tests for interactive functions
+  - improve "with-test-file" helper method
+  - figure out "wrong stringp nil type" issue, gem root and .gemspec file
+  - update obsolete flet library
