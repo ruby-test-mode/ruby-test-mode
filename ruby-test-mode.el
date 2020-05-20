@@ -472,7 +472,7 @@ FILENAME is tested to t by evaluating the ROOT-PREDICATE."
   "Return t if the given DIRECTORY is the root of a Ruby on Rails project, else nil."
   (and (ruby-test-ruby-root-p directory)
        (ruby-test-project-root-p directory
-                                 '("config/environment.rb" "config/database.yml"))))
+                                 '("config/environment.rb" "config/database.yml" "config/routes.rb"))))
 
 (defun ruby-test-gem-root (filename)
   "Return the gem project directory for the given FILENAME, else nil."
