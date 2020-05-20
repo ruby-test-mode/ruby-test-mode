@@ -57,7 +57,6 @@
 ;;
 ;; C-c C-s      - Toggle between implementation and test/example files.
 
-
 (require 'ruby-mode)
 (require 'pcre2el)
 
@@ -71,6 +70,13 @@ Test Driven Development in Ruby."
 (defcustom ruby-test-rspec-options
   '("-b")
   "Pass extra command line options to RSpec when running specs."
+  :initialize 'custom-initialize-default
+  :type '(list)
+  :group 'ruby-test)
+
+(defcustom ruby-test-plain-test-options
+  '()
+  "Pass extra command line options to minitest when running specs"
   :initialize 'custom-initialize-default
   :type '(list)
   :group 'ruby-test)
@@ -437,7 +443,11 @@ and replace the match with the second element."
               (setq name-options (format "--name \"/%s/\"" test-case))
             (error "No test case at %s:%s" filename line-number)))
       (setq name-options ""))
-    (format "%s %s %s %s" command (mapconcat 'identity options " ") filename name-options)))
+    (setq extra-options
+          (if (not (null ruby-test-plain-test-options))
+              (mapconcat 'identity ruby-test-plain-test-options " ")
+            ""))
+    (format "%s %s %s %s %s" command (mapconcat 'identity options " ") filename name-options extra-options)))
 
 (defun ruby-test-project-root (filename root-predicate)
   "Return the project root directory.
