@@ -76,7 +76,7 @@ Test Driven Development in Ruby."
 
 (defcustom ruby-test-plain-test-options
   '()
-  "Pass extra command line options to minitest when running specs"
+  "Pass extra command line options to minitest when running specs."
   :initialize 'custom-initialize-default
   :type '(list)
   :group 'ruby-test)
