@@ -74,21 +74,21 @@
 (ert-deftest ruby-test-command ()
   (with-test-file "test/minitest_helper.rb"
     (with-test-file ".gemspec"
-      (should (equal "bundle exec ruby -I'lib:test:spec' -rrubygems ./test/unit_test.rb "
+      (should (string-match "bundle exec ruby -I'lib:test:spec' -rrubygems ./test/unit_test.rb"
                 (ruby-test-command "./test/unit_test.rb")))))
   (with-test-file "spec/minitest_helper.rb"
     (with-test-file ".gemspec"
-      (should (equal "bundle exec ruby -I'lib:test:spec' -rrubygems ./spec/unit_spec.rb "
+      (should (string-match "bundle exec ruby -I'lib:test:spec' -rrubygems ./spec/unit_spec.rb"
                 (ruby-test-command "./spec/unit_spec.rb")))))
   (with-test-file ".gemspec"
-    (should (equal "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb "
+    (should (string-match "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb"
               (ruby-test-command "./test/unit_test.rb"))))
-  (should (equal "bundle exec rspec -b ./spec/unit_spec.rb"
+  (should (string-match "bundle exec rspec -b ./spec/unit_spec.rb"
             (ruby-test-spec-command "./spec/unit_spec.rb"))))
 
 (ert-deftest ruby-test-minitest-command ()
   (with-test-file ".gemspec"
-    (should (equal "bundle exec ruby -I'lib:test:spec' -rrubygems ./test/unit_test.rb "
+    (should (string-match "bundle exec ruby -I'lib:test:spec' -rrubygems ./test/unit_test.rb"
               (ruby-test-minitest-command "./test/unit_test.rb")))))
 
 (ert-deftest ruby-test-spec-command ()
@@ -105,7 +105,7 @@
 
 (ert-deftest ruby-test-test-command ()
   (with-test-file ".gemspec"
-    (should (equal "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb "
+    (should (string-match "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb"
               (ruby-test-test-command "./test/unit_test.rb")))))
 
 (ert-deftest ruby-test-rails-root-p ()
