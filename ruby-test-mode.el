@@ -55,6 +55,9 @@
 ;; C-c C-t t    - Runs the unit test or rspec example at the current buffer's
 ;; C-c C-t C-t    buffer's point.
 ;;
+;; C-c C-t r    - Reruns the last unit test or rspec example
+;; C-c C-t C-r
+;;
 ;; C-c C-s      - Toggle between implementation and test/example files.
 
 (require 'ruby-mode)
@@ -89,12 +92,18 @@ Test Driven Development in Ruby."
   nil
   "The last ruby test run.")
 
+(defvar ruby-test-last-test-command
+  nil
+  "The last ruby test command ran.")
+
 (defvar ruby-test-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-t n")   'ruby-test-run)
     (define-key map (kbd "C-c C-t C-n") 'ruby-test-run)
     (define-key map (kbd "C-c C-t t")   'ruby-test-run-at-point)
     (define-key map (kbd "C-c C-t C-t") 'ruby-test-run-at-point)
+    (define-key map (kbd "C-c C-t r")   'ruby-test-rerun)
+    (define-key map (kbd "C-c C-t C-r") 'ruby-test-rerun)
     (define-key map (kbd "C-c C-s")     'ruby-test-toggle-implementation-and-specification)
     map)
   "The keymap used in command `ruby-test-mode' buffers.")
@@ -385,8 +394,20 @@ and replace the match with the second element."
                                            (ruby-test-run-command (ruby-test-command filename line)))))
       (message ruby-test-not-found-message))))
 
+;;;###autoload
+(defun ruby-test-rerun ()
+  "Rerun the last test that was run by ruby-test.
+
+When no tests had been run before calling this function, do nothing."
+  (interactive)
+  (if ruby-test-last-test-command
+      (ruby-test-with-ruby-directory ruby-test-last-run
+                                     (ruby-test-run-command ruby-test-last-test-command))
+    (message "No tests have been run yet")))
+
 (defun ruby-test-run-command (command)
   "Run compilation COMMAND in rails or ruby root directory."
+  (setq ruby-test-last-test-command command)
   (compilation-start command t))
 
 (defun ruby-test-command (filename &optional line-number)

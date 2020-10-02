@@ -14,6 +14,7 @@
    |------------------------------------------+--------------------------------------------------------------------|
    | ~C-c C-t n~ @@html:<br/>@@ ~C-c C-t C-n~ | Run the current buffer's file as an unit test or an rspec example. |
    | ~C-c C-t t~ @@html:<br/>@@ ~C-c C-t C-t~ | Runs the unit test or rspec example at the current buffer's point. |
+   | ~C-c C-t r~ @@html:<br/>@@ ~C-c C-t C-r~ | Reruns the last unit test or rspec example.                        |
    | ~C-c C-s~                                | Toggle between implementation and test/example files.              |
 
 ** License
