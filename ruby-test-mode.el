@@ -84,6 +84,13 @@ Test Driven Development in Ruby."
   :type '(list)
   :group 'ruby-test)
 
+(defcustom ruby-test-rails-test-options
+  '("-v")
+  "Pass extra command line options to `rails test` when running tests."
+  :initialize 'custom-initialize-default
+  :type '(list)
+  :group 'ruby-test)
+
 (defvar ruby-test-default-library
   "test"
   "Define the default test library.")
@@ -253,6 +260,10 @@ mode."
 
 (defalias 'find-all 'ruby-test-select)
 
+(defun ruby-test-rails-p (filename)
+  "Return non-nil if FILENAME is part of a Ruby on Rails project."
+  (and (stringp filename) (ruby-test-rails-root filename)))
+
 (defun ruby-test-minitest-p (filename)
   "Return non-nil if FILENAME is a minitest."
   (and (stringp filename)
@@ -412,13 +423,25 @@ When no tests had been run before calling this function, do nothing."
 
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification depending on the FILENAME and LINE-NUMBER."
-  (cond ((ruby-test-minitest-p filename)
-          (ruby-test-minitest-command filename line-number))
+  (cond ((ruby-test-rails-p filename)
+         (ruby-test-rails-command filename line-number))
+        ((ruby-test-minitest-p filename)
+         (ruby-test-minitest-command filename line-number))
         ((ruby-test-spec-p filename)
          (ruby-test-spec-command filename line-number))
         ((ruby-test-p filename)
          (ruby-test-test-command filename line-number))
         (t (message "File is not a known ruby test file"))))
+
+(defun ruby-test-rails-command (filename &optional line-number)
+  "Return command to run test in FILENAME at LINE-NUMBER with Rails test runner."
+  (let ((line-part (if line-number
+                       (format ":%d" line-number)
+                     ""))
+        (extra-options (if (not (null ruby-test-rails-test-options))
+                           (mapconcat 'identity ruby-test-rails-test-options " ")
+                         "")))
+    (format "PAGER=cat bundle exec rails test %s %s%s" extra-options filename line-part)))
 
 (defun ruby-test-minitest-command (filename &optional line-number)
   "Return command to run minitest in FILENAME at LINE-NUMBER."
@@ -501,7 +524,8 @@ FILENAME is tested to t by evaluating the ROOT-PREDICATE."
 
 (defun ruby-test-rails-root-p (directory)
   "Return t if the given DIRECTORY is the root of a Ruby on Rails project, else nil."
-  (and (ruby-test-ruby-root-p directory)
+  (and directory
+       (ruby-test-ruby-root-p directory)
        (ruby-test-project-root-p directory
                                  '("config/environment.rb" "config/database.yml" "config/routes.rb"))))
 
