@@ -83,6 +83,9 @@
   (with-test-file ".gemspec"
     (should (string-match "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb"
               (ruby-test-command "./test/unit_test.rb"))))
+  (with-test-file "config/environment.rb"
+    (should (string-match "PAGER=cat bundle exec rails test -v ./test/unit_test.rb"
+              (ruby-test-command "./test/unit_test.rb"))))
   (should (string-match "bundle exec rspec -b ./spec/unit_spec.rb"
             (ruby-test-spec-command "./spec/unit_spec.rb"))))
 
@@ -136,6 +139,14 @@
     (should (ruby-test-minitest-p "spec/hello_spec.rb")))
   (with-test-file "test/minitest_helper.rb"
     (should (ruby-test-minitest-p "test/hello_test.rb"))))
+
+(ert-deftest ruby-test-rails-p ()
+  (with-test-file "config/environment.rb"
+    (should (ruby-test-rails-p "./test/unit_test.rb")))
+  (with-test-file "config/database.yml"
+    (should (ruby-test-rails-p "./test/unit_test.rb")))
+  (with-test-file "config/routes.rb"
+    (should (ruby-test-rails-p "./test/unit_test.rb"))))
 
 (ert-deftest ruby-test-spec-p ()
   (should (ruby-test-spec-p "spec/hello_spec.rb")))
