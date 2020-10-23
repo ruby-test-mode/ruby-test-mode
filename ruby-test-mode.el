@@ -474,7 +474,7 @@ When no tests had been run before calling this function, do nothing."
 
 (defun ruby-test-test-command (filename &optional line-number)
   "Return command to run test in FILENAME at LINE-NUMBER."
-  (let (command options name-options)
+  (let (command options name-options extra-options)
     (if (file-exists-p ".zeus.sock")
         (setq command "zeus test")
       (setq command "bundle exec ruby"))
