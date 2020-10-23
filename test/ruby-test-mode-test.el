@@ -84,7 +84,7 @@
     (should (string-match "bundle exec ruby -I'lib:test' -rrubygems ./test/unit_test.rb"
               (ruby-test-command "./test/unit_test.rb"))))
   (with-test-file "config/environment.rb"
-    (should (string-match "PAGER=cat bundle exec rails test -v ./test/unit_test.rb"
+    (should (string-match "bundle exec rails test -v ./test/unit_test.rb"
               (ruby-test-command "./test/unit_test.rb"))))
   (should (string-match "bundle exec rspec -b ./spec/unit_spec.rb"
             (ruby-test-spec-command "./spec/unit_spec.rb"))))
