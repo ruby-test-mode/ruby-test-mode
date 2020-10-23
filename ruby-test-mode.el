@@ -124,7 +124,6 @@ Test Driven Development in Ruby."
 (defcustom ruby-test-implementation-filename-mapping
   `(
     (,(pcre-to-elisp "(.*)/spec/routing/routes_spec\\.rb$") "\\1/config/routes.rb")
-    (,(pcre-to-elisp "(.*)/spec/routing/routes_spec\\.rb$") "\\1/config/routes.rb")
     (,(pcre-to-elisp "(.*)/test/routing/routes_test\\.rb$") "\\1/config/routes.rb")
     (,(pcre-to-elisp "(.*)/spec/(controllers|models|jobs|helpers|mailers|uploaders|api)/(.*)_spec\\.rb$")
      "\\1/app/\\2/\\3.rb")
