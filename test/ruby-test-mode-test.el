@@ -53,6 +53,26 @@
   (should (equal "project/spec/javascripts/file_spec.coffee"
                  (ruby-test-specification-filename "project/app/assets/javascripts/file.coffee"))))
 
+(ert-deftest ruby-test-implementation-filename ()
+  (should (equal "project/app/models/file.rb"
+                 (ruby-test-implementation-filename "project/spec/models/file_spec.rb")))
+  (should (equal "project/app/controllers/file.rb"
+                 (ruby-test-implementation-filename "project/spec/controllers/file_spec.rb")))
+  (should (equal "project/app/services/file.rb"
+                 (ruby-test-implementation-filename "project/spec/services/file_spec.rb")))
+  (should (equal "project/app/helpers/file.rb"
+                 (ruby-test-implementation-filename "project/spec/helpers/file_spec.rb")))
+  (should (equal "project/app/views/posts/new.html.erb"
+                 (ruby-test-implementation-filename "project/spec/views/posts/new.html.erb_spec.rb")))
+  (should (equal "project/lib/something/file.rb"
+                 (ruby-test-implementation-filename "project/spec/something/file_spec.rb")))
+  (should (equal "project/lib/some_lib/file.rb"
+                 (ruby-test-implementation-filename "project/spec/some_lib/file_spec.rb")))
+  (should (equal "project/something/file.rb"
+                 (ruby-test-implementation-filename "project/something/file_spec.rb")))
+  (should (equal "project/app/assets/javascripts/file.coffee"
+                 (ruby-test-implementation-filename "project/spec/javascripts/file_spec.coffee"))))
+
 (ert-deftest ruby-test-testcase-name-test ()
   (find-file "test/unit_test.rb")
   (should (equal "test_one"
