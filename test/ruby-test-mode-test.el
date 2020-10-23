@@ -1,6 +1,8 @@
 (ert-deftest ruby-test-unit-filename ()
   (should (equal "project/test/controllers/path/controller_test.rb"
                  (ruby-test-unit-filename "project/app/controllers/path/controller.rb")))
+  (should (equal "project/test/services/path/service_test.rb"
+                 (ruby-test-unit-filename "project/app/services/path/service.rb")))
   (should (equal "project/test/models/path/model_test.rb"
                  (ruby-test-unit-filename "project/app/models/path/model.rb")))
   (should (equal "project/test/file_test.rb"
@@ -38,6 +40,8 @@
                  (ruby-test-specification-filename "project/app/models/file.rb")))
   (should (equal "project/spec/controllers/file_spec.rb"
                  (ruby-test-specification-filename "project/app/controllers/file.rb")))
+  (should (equal "project/spec/services/file_spec.rb"
+                 (ruby-test-specification-filename "project/app/services/file.rb")))
   (should (equal "project/spec/helpers/file_spec.rb"
                  (ruby-test-specification-filename "project/app/helpers/file.rb")))
   (should (equal "project/spec/views/posts/new.html.erb_spec.rb"
@@ -64,6 +68,8 @@
                  (ruby-test-implementation-filename "project/spec/helpers/file_spec.rb")))
   (should (equal "project/app/views/posts/new.html.erb"
                  (ruby-test-implementation-filename "project/spec/views/posts/new.html.erb_spec.rb")))
+  (should (equal "project/app/services/some_service/file.rb"
+                 (ruby-test-implementation-filename "project/spec/services/some_service/file_spec.rb")))
   (should (equal "project/lib/something/file.rb"
                  (ruby-test-implementation-filename "project/spec/something/file_spec.rb")))
   (should (equal "project/lib/some_lib/file.rb"
