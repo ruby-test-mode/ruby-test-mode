@@ -91,6 +91,13 @@ Test Driven Development in Ruby."
   :type '(list)
   :group 'ruby-test)
 
+(defcustom ruby-test-execution-environment
+  '("PAGER=cat")
+  "Environment variables to be set when running tests."
+  :initialize 'custom-initialize-default
+  :type '(repeat (string :tag "ENVVARNAME=VALUE"))
+  :group 'ruby-test)
+
 (defvar ruby-test-default-library
   "test"
   "Define the default test library.")
@@ -418,7 +425,9 @@ When no tests had been run before calling this function, do nothing."
 (defun ruby-test-run-command (command)
   "Run compilation COMMAND in rails or ruby root directory."
   (setq ruby-test-last-test-command command)
-  (compilation-start command t))
+  (let ((compilation-environment
+         (append ruby-test-execution-environment compilation-environment)))
+    (compilation-start command t)))
 
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification depending on the FILENAME and LINE-NUMBER."
@@ -440,7 +449,7 @@ When no tests had been run before calling this function, do nothing."
         (extra-options (if (not (null ruby-test-rails-test-options))
                            (mapconcat 'identity ruby-test-rails-test-options " ")
                          "")))
-    (format "PAGER=cat bundle exec rails test %s %s%s" extra-options filename line-part)))
+    (format "bundle exec rails test %s %s%s" extra-options filename line-part)))
 
 (defun ruby-test-minitest-command (filename &optional line-number)
   "Return command to run minitest in FILENAME at LINE-NUMBER."
