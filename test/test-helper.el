@@ -4,7 +4,7 @@
 (require 'testcover)
 (require 'f)
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 (require 'ert)
 
 (require 'ruby-test-mode)

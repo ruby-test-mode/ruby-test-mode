@@ -13,10 +13,10 @@
                     "third/\\1_test.rb"))))
     (should (equal "exists_test.rb"
                    (ruby-test-find-target-filename "exists.rb" mapping)))
-    (flet ((file-exists-p (filename)
-                          (if (string-match "other" filename)
-                              t
-                            nil)))
+    (cl-letf (((symbol-function 'file-exists-p) (lambda (filename)
+                                                  (if (string-match "other" filename)
+                                                      t
+                                                    nil))))
       (should (equal "other/exists_test.rb"
                      (ruby-test-find-target-filename "exists.rb" mapping))))))
 
