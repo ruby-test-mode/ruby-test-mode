@@ -431,12 +431,12 @@ When no tests had been run before calling this function, do nothing."
 
 (defun ruby-test-command (filename &optional line-number)
   "Return the command to run a unit test or a specification depending on the FILENAME and LINE-NUMBER."
-  (cond ((ruby-test-rails-p filename)
-         (ruby-test-rails-command filename line-number))
-        ((ruby-test-minitest-p filename)
+  (cond ((ruby-test-minitest-p filename)
          (ruby-test-minitest-command filename line-number))
         ((ruby-test-spec-p filename)
          (ruby-test-spec-command filename line-number))
+        ((ruby-test-rails-p filename)
+         (ruby-test-rails-command filename line-number))
         ((ruby-test-p filename)
          (ruby-test-test-command filename line-number))
         (t (message "File is not a known ruby test file"))))
