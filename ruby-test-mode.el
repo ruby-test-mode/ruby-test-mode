@@ -250,7 +250,8 @@ mode."
   :group 'ruby-test)
 
 (defmacro ruby-test-with-ruby-directory (filename form)
-  "Set to ruby or rails root inferred from FILENAME and run the provided FORM with `default-directory` bound."
+  "Set to ruby or rails root inferred from FILENAME and run the
+provided FORM with `default-directory` bound."
   `(let ((default-directory (or (ruby-test-rails-root ,filename)
                                 (ruby-test-ruby-root ,filename)
                                 default-directory)))
@@ -372,12 +373,14 @@ and replace the match with the second element."
     name)))
 
 (defun ruby-test-implementation-filename (&optional filename)
-  "Return the implementation filename for the current buffer's filename or the optional FILENAME, else nil."
+  "Return the implementation filename for the current buffer's
+filename or the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-implementation-filename-mapping)))
 
 (defun ruby-test-implementation-p (&optional filename)
-  "Return t if the current buffer's filename or the given FILENAME is a Ruby implementation file."
+  "Return t if the current buffer's filename or the given FILENAME
+is a Ruby implementation file."
   (let ((filename (or filename buffer-file-name)))
     (and (file-readable-p filename)
          (string-match (regexp-opt ruby-test-file-name-extensions)
@@ -399,7 +402,8 @@ and replace the match with the second element."
 
 ;;;###autoload
 (defun ruby-test-run-at-point ()
-  "Run test at point individually, using the same search strategy as `ruby-test-run-file'."
+  "Run test at point individually, using the same search strategy as
+`ruby-test-run-file'."
   (interactive)
   (let* ((filename (ruby-test-find-file))
          (test-file-buffer (get-file-buffer filename)))
@@ -430,7 +434,8 @@ When no tests had been run before calling this function, do nothing."
     (compilation-start command t)))
 
 (defun ruby-test-command (filename &optional line-number)
-  "Return the command to run a unit test or a specification depending on the FILENAME and LINE-NUMBER."
+  "Return the command to run a unit test or a specification
+depending on the FILENAME and LINE-NUMBER."
   (cond ((ruby-test-minitest-p filename)
          (ruby-test-minitest-command filename line-number))
         ((ruby-test-spec-p filename)
@@ -531,7 +536,8 @@ FILENAME is tested to t by evaluating the ROOT-PREDICATE."
   (ruby-test-project-root filename 'ruby-test-rails-root-p))
 
 (defun ruby-test-rails-root-p (directory)
-  "Return t if the given DIRECTORY is the root of a Ruby on Rails project, else nil."
+  "Return t if the given DIRECTORY is the root of a Ruby on Rails
+project, else nil."
   (and directory
        (ruby-test-ruby-root-p directory)
        (ruby-test-project-root-p directory
@@ -558,13 +564,15 @@ FILENAME is tested to t by evaluating the ROOT-PREDICATE."
       (ruby-test-project-root-p directory '("test"))))
 
 (defun ruby-test-specification-filename (&optional filename)
-  "Return the specification filename for the current buffer's filename or the optional FILENAME, else nil."
+  "Return the specification filename for the current buffer's
+filename or the optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-specification-filename-mapping)))
 
 ;;;###autoload
 (defun ruby-test-toggle-implementation-and-specification (&optional filename)
-  "Toggle between the implementation and specification/test file for the current buffer or the optional FILENAME."
+  "Toggle between the implementation and specification/test file for
+the current buffer or the optional FILENAME."
   (interactive)
   (let ((filename (or filename (buffer-file-name))))
     (cond ((ruby-test-implementation-p filename)
@@ -584,7 +592,8 @@ FILENAME is tested to t by evaluating the ROOT-PREDICATE."
            (message "Sorry, %s is neither a Ruby implementation nor a test file." filename)))))
 
 (defun ruby-test-unit-filename (&optional filename)
-  "Return the unit filename for the current buffer's filename or the optional FILENAME, else nil."
+  "Return the unit filename for the current buffer's filename or the
+optional FILENAME, else nil."
   (let ((filename (or filename (buffer-file-name))))
     (ruby-test-find-target-filename filename ruby-test-unit-filename-mapping)))
 
