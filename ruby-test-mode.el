@@ -173,36 +173,22 @@ second the replace expression."
 
 (defcustom ruby-test-specification-filename-mapping
   `(
-    (,(pcre-to-elisp "(.*)/config/routes\\.rb$")
-     "\\1/spec/routing/routes_spec.rb"
-     "\\1/test/routing/routes_test.rb")
-    (,(pcre-to-elisp "(.*)/app/views/(.*)$")
-     "\\1/spec/views/\\2_spec.rb"
-     "\\1/test/views/\\2_test.rb")
-
+    (,(pcre-to-elisp "(.*)/config/routes\\.rb$") "\\1/spec/routing/routes_spec.rb")
+    (,(pcre-to-elisp "(.*)/app/views/(.*)$") "\\1/spec/views/\\2_spec.rb")
     ;; everything in app, should exist same path in spec/test.
-    (,(pcre-to-elisp "(.*?)/app/(.*)\\.rb$")
-     "\\1/spec/\\2_spec.rb"
-     "\\1/test/\\2_test.rb")
-
-    (,(pcre-to-elisp "(.*)/lib/(tasks/.*)\\.rake$")
-     "\\1/spec/\\2_tasks_spec.rb"
-     "\\1/test/\\2_tasks_test.rb")
-
+    (,(pcre-to-elisp "(.*?)/app/(.*)\\.rb$") "\\1/spec/\\2_spec.rb")
+    (,(pcre-to-elisp "(.*)/lib/(tasks/.*)\\.rake$") "\\1/spec/\\2_tasks_spec.rb")
     ;; Project/lib/aaa/bbb.rb, search order:
     ;; => Project/spec/lib/aaa/bbb_spec.rb, Project/spec/aaa/bbb_spec.rb
     (,(pcre-to-elisp "(.*)/lib/(.*)\\.rb$")
      "\\1/spec/\\2_spec.rb"
      "\\1/spec/lib/\\2_spec.rb"
-     "\\1/test/\\2_test.rb"
-     "\\1/test/lib/\\2_test.rb")
-
+     )
     ;; make ruby-test-mode support asserts spec.
     (,(pcre-to-elisp "(.*)/app/assets/javascripts/(.*)\\.(js|coffee)$")
      "\\1/spec/javascripts/\\2_spec.\\3")
-
     ;; in same folder,  gem/aaa.rb => gem/aaa_spec.rb
-    (,(pcre-to-elisp "(.*)\\.rb$") "\\1_spec.rb" "\\1_test.rb")
+    (,(pcre-to-elisp "(.*)\\.rb$") "\\1_spec.rb")
     )
   "Regular expressions to map Ruby specification to implementation filenames).
 The first element in each list is the
@@ -210,9 +196,6 @@ match, the second the replace expression."
   :type '(list)
   :group 'ruby-test)
 
-;; TODO: It seem like we does not need this mapping anymore.
-;; We could add more candicaate to `ruby-test-specification-filename-mapping' to
-;; instead this.
 (defcustom ruby-test-unit-filename-mapping
   `(
     (,(pcre-to-elisp "(.*)/config/routes\\.rb$") "\\1/test/routing/routes_test.rb")
@@ -223,13 +206,13 @@ match, the second the replace expression."
     (,(pcre-to-elisp "(.*)/app/models/(.*)\\.rb$")
      "\\1/test/models/\\2_test.rb"
      "\\1/test/unit/\\2_test.rb")
-    (,(pcre-to-elisp "(.*)/app/(.*)\\.rb$")
-     "\\1/test/\\2_test.rb")
+    (,(pcre-to-elisp "(.*?)/app/(.*)\\.rb$") "\\1/test/\\2_test.rb")
     (,(pcre-to-elisp "(.*)/lib/(tasks/.*)\\.rake$") "\\1/test/\\2_tasks_test.rb")
     (,(pcre-to-elisp "(.*)/lib/(.*)\\.rb$")
      "\\1/test/\\2_test.rb"
+     "\\1/test/lib/\\2_test.rb"
      "\\1/test/unit/\\2_test.rb"
-     "\\1/test/lib/\\2_test.rb")
+     )
     (,(pcre-to-elisp "(.*)\\.rb$") "\\1_test.rb")
     )
   "Regular expressions to map Ruby unit to implementation filenames.
@@ -590,13 +573,18 @@ FILENAME is tested to t by evaluating the ROOT-PREDICATE."
 
 (defun ruby-test-default-test-filename (filename)
   "Return the default test filename for FILENAME."
-  (cond ((and (string-equal ruby-test-default-library "test")
-              (ruby-test-unit-filename filename))
+  (cond
+   ((file-exists-p (concat (ruby-test-project-root filename 'ruby-test-ruby-root-p) "/spec"))
+    (ruby-test-specification-filename filename))
+   ((file-exists-p (concat (ruby-test-project-root filename 'ruby-test-ruby-root-p) "/test"))
+    (ruby-test-unit-filename filename))
+   ((and (string-equal ruby-test-default-library "test")
          (ruby-test-unit-filename filename))
-        ((and (string-equal ruby-test-default-library "spec")
-              (ruby-test-specification-filename filename))
+    (ruby-test-unit-filename filename))
+   ((and (string-equal ruby-test-default-library "spec")
          (ruby-test-specification-filename filename))
-        (t nil)))
+    (ruby-test-specification-filename filename))
+   (t nil)))
 
 (defun ruby-test-enable ()
   "Enable the ruby test mode."
