@@ -91,6 +91,13 @@ Test Driven Development in Ruby."
   :type '(list)
   :group 'ruby-test)
 
+(defcustom ruby-test-rails-test-command
+  "bundle exec rails test"
+  "Command to run rails tests."
+  :initialize 'custom-initialize-default
+  :type '(string)
+  :group 'ruby-test)
+
 (defcustom ruby-test-execution-environment
   '("PAGER=cat")
   "Environment variables to be set when running tests."
@@ -449,7 +456,7 @@ When no tests had been run before calling this function, do nothing."
         (extra-options (if (not (null ruby-test-rails-test-options))
                            (mapconcat 'identity ruby-test-rails-test-options " ")
                          "")))
-    (format "bundle exec rails test %s %s%s" extra-options filename line-part)))
+    (format "%s %s %s%s" ruby-test-rails-test-command extra-options filename line-part)))
 
 (defun ruby-test-minitest-command (filename &optional line-number)
   "Return command to run minitest in FILENAME at LINE-NUMBER."
